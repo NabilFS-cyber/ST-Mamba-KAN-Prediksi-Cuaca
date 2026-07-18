@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Data files (too large for GitHub)
+*.nc
+*.pkl
+*.pt
+*.pth
+*.h5
+*.hdf5
+*.csv
+*.parquet
+
+# Output images
+*.png
+*.jpg
+*.jpeg
+
+# Google Colab
+.config/
+sample_data/
+
+# Logs
+*.log
