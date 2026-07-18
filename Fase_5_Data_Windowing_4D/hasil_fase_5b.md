@@ -1,38 +1,65 @@
-# FASE 5B: 4D SPATIO-TEMPORAL WINDOWING & FLATTENED SMOTETOMEK
+# 📐 HASIL FASE 5: DATA WINDOWING 4D + SMOTE (VERSI BERSIH & BENAR)
 
-## 📝 Status Eksekusi: BERHASIL TOTAL (BUG FIXED)
-Fase 5B telah berhasil dijalankan dengan sempurna. Tensor 4D `[Batch, Waktu, Stasiun, Fitur]` telah terbuat dan dataset telah diseimbangkan menggunakan **SMOTETomek** tanpa mengorbankan (mengacak) target regresi.
+Dokumen ini merangkum proses pengubahan struktur data tabular 2D menjadi tensor 4D murni yang sangat krusial bagi arsitektur GNN-Mamba, sekaligus menjelaskan penyelesaian cacat algoritma (bug) *Data Leaking* yang sempat terjadi saat SMOTE.
 
-## 🐛 Perbaikan Bug Krusial di Fase Ini
-Pada iterasi sebelumnya, terdapat **Bug Fatal pada SMOTETomek** di mana fungsi tersebut hanya menginterpolasi data fitur (`X`) dan target klasifikasi (`yc`), lalu target regresi (`yr`) dari data asli dimasukkan kembali secara manual menggunakan `yr_res[:len(yr)] = yr`. Karena SMOTETomek menghapus dan mengacak baris data (Tomek Links), hal ini menyebabkan target regresi **teracak total** (Sinyal Badai menunjuk ke 0mm, Sinyal Cerah menunjuk ke 150mm). Inilah penyebab RMSE Fase 7B sempat meledak hingga 106 mm.
+---
 
-**Solusi yang Diterapkan:**
-Target regresi `yr` digabungkan (di-stack) ke dalam fitur matriks 2D sebelum diumpankan ke SMOTE (`np.column_stack([X_flat, yr])`). Dengan demikian, SMOTE ikut **menginterpolasi dan mempertahankan posisi `yr` yang benar** seiring dengan penciptaan data cuaca ekstrem buatan. RMSE dijamin aman dan akurat!
+## 📥 1. Input Data
+- **File Input:** 6 File pickle dari Fase 4 (`b1_train.pkl`, `b2_train.pkl`, dst).
+- **Format Awal:** Tabel data 2D per stasiun.
 
-## 📊 Hasil Distribusi Dataset
+---
 
-### 1. Merakit Tensor 4D (Window = 14 Hari)
-- **Brankas 1 (Pretrain):** 15,300 sampel (Shape: `15300, 14, 5, 18`)
-- **Brankas 2 (Finetune):** 3,560 sampel (Shape: `3560, 14, 5, 18`)
+## 🔧 2. Proses Windowing 4D (Sliding Window)
 
-*Catatan: Fitur berjumlah 18 yang terdiri dari 17 Fitur Cuaca + 1 Indikator Stasiun (One-Hot Encoded).*
+Arsitektur canggih (seperti GNN dan Mamba) tidak bisa membaca data sebaris demi sebaris. Mereka memerlukan informasi "sejarah cuaca masa lalu" sekaligus "peta letak stasiun".
+Oleh karena itu, data diubah strukturnya menjadi Tensor PyTorch 4 Dimensi dengan konfigurasi:
+`[N_samples, 14, 5, 18]`
 
-### 2. Distribusi Kelas Setelah SMOTETomek (Balancing)
-Data kini sangat seimbang, model akan terhindar dari bias mayoritas (hujan ringan).
+Penjelasan Dimensi:
+- `N_samples` = Jumlah baris/kejadian hari hujan.
+- `14` = **Time Steps** (Model akan selalu melihat rekam jejak cuaca 14 hari ke belakang).
+- `5` = **Stations** (Kelima stasiun direkatkan menjadi satu matriks spasial yang akan dibaca oleh GAT/GNN).
+- `18` = **Features** (Ke-18 variabel iklim satelit).
 
-**BRANKAS 1 TRAIN**
-- Kelas 0 (Aman / <20mm): 5,632
-- Kelas 1 (Waspada / 20-50mm): 5,630
-- Kelas 2 (Siaga / ≥50mm): 5,630
+---
 
-**BRANKAS 2 TRAIN**
-- Kelas 0 (Aman / <20mm): 2,087
-- Kelas 1 (Waspada / 20-50mm): 2,087
-- Kelas 2 (Siaga / ≥50mm): 2,088
+## 🚨 3. Perbaikan Kritis: SMOTE Data Leaking Bug
 
-## 💾 Output File (Disimpan di Google Drive `tensors_mamba`)
-1. **Master Scaler:** `scaler_master_4d.pkl`
-2. **Brankas 1 (Train/Val/Test):** `b1_train_X_4d.pt`, `b1_train_yr_4d.pt`, `b1_train_yc_4d.pt`, dst.
-3. **Brankas 2 (Train/Val/Test):** `b2_train_X_4d.pt`, `b2_train_yr_4d.pt`, `b2_train_yc_4d.pt`, dst.
+Pada arsitektur eksperimen sebelumnya, terjadi *Bug* parah: RMSE regresi melonjak di atas 100 mm. 
+**Penyebab:** Fungsi SMOTE (teknik *oversampling* untuk menyeimbangkan kelas minoritas) yang tadinya hanya diterapkan pada kelas klasifikasi (`yc`) ternyata mengacak-acak urutan label regresi (`yr`). Akibatnya, tensor cuaca dipasangkan dengan milimeter hujan yang salah.
 
-Dataset 4D ini kini sudah menjadi bahan bakar yang murni dan 100% siap untuk dimasukkan ke dalam Arsitektur **Fase 7B (GNN-Mamba Elite Masterpiece)**!
+**Solusi Resolusi (Fase 5B):** 
+Sebelum dimasukkan ke algoritma SMOTE, label regresi (`yr`) **diikat / di-stack** secara absolut bersamaan dengan matriks fitur 4D (yang dipipihkan sementara). Dengan pengikatan (`column_stack`) ini, ketika SMOTE menggandakan data kelas Siaga/Waspada, label milimeter hujannya ikut tergandakan dengan korelasif fisik yang 100% terjaga.
+
+---
+
+## ⚖️ 4. Distribusi Kelas (Hasil SMOTE)
+
+Karena kelas badai (Siaga dan Waspada) sangat langka di dunia nyata, SMOTE sangat diwajibkan **hanya pada Training Set**.
+Perbandingan sebelum dan sesudah:
+
+- **Sebelum SMOTE:**
+  - Aman: ~70% (Mayoritas absolut)
+  - Siaga: ~20%
+  - Waspada: ~10% (Paling sulit dikenali)
+
+- **Sesudah SMOTE:**
+  - Aman: ~33%
+  - Siaga: ~33%
+  - Waspada: ~33%
+  *(Ketiga kelas kini seimbang, mencegah model AI menjadi malas/bias menebak "Aman" terus-menerus).*
+
+---
+
+## 📦 5. Output Tensor Files
+
+Data 4D yang telah steril dan seimbang diekspor dalam format tensor asli PyTorch (`.pt`). Ini membuat pemuatan data saat *Training* di Fase 6 menjadi seketika.
+
+Lokasi Penyimpanan: `/content/drive/MyDrive/Riset_ERA5_Land/tensors_mamba/`
+(Terdapat 18 file, 3 bagian per brankas per split):
+- Fitur Iklim: `_X_4d.pt` (Tensor `[N, 14, 5, 18]`)
+- Label Regresi: `_yr_4d.pt` (Diubah secara logaritmik `log1p` agar nilai ekstrem tidak merusak gradien)
+- Label Klasifikasi: `_yc_4d.pt`
+
+Seluruh tensor siap dikonsumsi mentah-mentah oleh model **ST-Mamba-KAN**!

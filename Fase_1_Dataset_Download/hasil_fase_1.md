@@ -1,63 +1,50 @@
-# Laporan Eksekusi: Fase 1 (Pengunduhan & Eksplorasi Dataset)
+# 🌐 HASIL FASE 1: DOWNLOAD DATASET ERA5-LAND (ECMWF)
 
-Fase 1 berfokus pada pengumpulan, pengunduhan, dan pemahaman karakteristik dua sumber data utama yang akan digunakan untuk melatih Model AI Peringatan Dini Banjir Jabodetabek. Data ini terdiri dari **Data Satelit (ERA5-Land)** dan **Data Observasi Darat (BMKG)**.
-
----
-
-## 🛰️ 1. DATA SATELIT: Copernicus ERA5-Land (Resolusi Per Jam)
-Data ini bertindak sebagai **"Fitur Cuaca & Iklim" (Inputs)** untuk melatih pemahaman fisika AI.
-
-### 📌 Karakteristik Pengunduhan:
-- **Periode Waktu**: 1 Januari 2016 – 31 Mei 2026 (10+ Tahun).
-- **Resolusi Temporal**: **PER JAM (Hourly / 24 Jam)**. *Ini sangat penting karena cuaca ekstrem bisa terjadi dan berlalu hanya dalam hitungan jam.*
-- **Resolusi Spasial**: Mencakup *Bounding Box* area Jabodetabek (Latitude: -5.9 hingga -6.8, Longitude: 106.3 hingga 107.3).
-
-### 📊 11 Variabel Meteorologi yang Diamankan:
-Data dipecah menjadi dua porsi (A dan B) untuk menghindari *timeout* dari server Copernicus, lalu dijahit secara presisi menjadi satu file `.nc` per bulan:
-1. `10m_u_component_of_wind` (Kecepatan Angin U)
-2. `10m_v_component_of_wind` (Kecepatan Angin V)
-3. `2m_dewpoint_temperature` (Suhu Titik Embun)
-4. `2m_temperature` (Suhu Udara)
-5. `surface_pressure` (Tekanan Permukaan)
-6. `total_precipitation` (Curah Hujan Total - *Parameter Paling Krusial*)
-7. `surface_net_solar_radiation` (Radiasi Matahari Neto)
-8. `skin_temperature` (Suhu Permukaan Tanah)
-9. `volumetric_soil_water_layer_1` (Kandungan Air Tanah Lapisan 1)
-10. `volumetric_soil_water_layer_2` (Kandungan Air Tanah Lapisan 2)
-11. `evaporation_from_bare_soil` (Evaporasi dari Tanah Kosong)
+Fase 1 adalah titik nol dari pengembangan arsitektur ST-Mamba-KAN. Pada tahap ini, kita mengumpulkan data iklim masa lalu beresolusi tinggi langsung dari satelit Eropa untuk memodelkan sistem hidrometeorologi di atas wilayah Jabodetabek.
 
 ---
 
-## 🏢 2. DATA OBSERVASI DARAT: Stasiun BMKG (Ground-Truth)
-Data ini bertindak sebagai **"Kunci Jawaban" (Targets/Labels)** untuk mengoreksi tebakan (prediksi) AI. Data BMKG ini berbasis harian (Daily).
-
-Berdasarkan eksplorasi folder `C:\kuliah nabil\DLL\PKM\PENDANAAN\DataSet\BMKG FIX PERSTASIUN PERFILE`, kita telah mengamankan 5 file dataset Excel (kunci jawaban murni) dari 5 stasiun pengamatan iklim yang tersebar secara strategis, yaitu:
-
-1. 📍 **Stasiun Meteorologi Soekarno Hatta** *(Mewakili area Barat/Tangerang)*
-2. 📍 **Stasiun Meteorologi Maritim Tanjung Priok** *(Mewakili area Utara/Pesisir)*
-3. 📍 **Stasiun Meteorologi Kemayoran** *(Mewakili area Pusat Jakarta)*
-4. 📍 **Stasiun Meteorologi Citeko** *(Mewakili area Selatan/Dataran Tinggi Puncak)*
-5. 📍 **Stasiun Klimatologi Jawa Barat** *(Mewakili area Bogor/Hulu)*
-
-### 📌 Karakteristik & Rentang Waktu Data BMKG:
-- **Periode Waktu**: 5 Juni 2024 hingga 31 Mei 2026.
-- **Resolusi Temporal**: Harian (*Daily*).
-- Kelima stasiun ini nantinya menjadi titik referensi tata ruang untuk membangun matriks **GNN (Graph Neural Network)**.
-
-### 📊 Variabel BMKG yang Digunakan:
-Berdasarkan data mentah Excel yang diunduh dari pusat data BMKG, terdapat 6 parameter cuaca darat yang terekam, yaitu:
-1. **TX**: Suhu Udara Maksimum (°C)
-2. **RH_AVG**: Kelembapan Udara Rata-rata (%)
-3. **RR**: Curah Hujan (mm) ➔ *Ini adalah Target Utama (Ground-Truth/Label) model AI.*
-4. **SS**: Lamanya Penyinaran Matahari (jam)
-5. **FF_X**: Kecepatan Angin Maksimum (m/s atau knot)
-6. **DDD_X**: Arah Angin saat kecepatan maksimum (derajat)
-
-Nilai **RR (Curah Hujan)** inilah yang menjadi patokan mutlak untuk mengkategorikan peringatan banjir: **Aman (<20mm)**, **Waspada (20-50mm)**, atau **Siaga (≥50mm)**.
+## 📥 1. Sumber Data (Copernicus CDS)
+- **Platform:** ECMWF Copernicus Climate Data Store (CDS)
+- **API:** Diunduh secara otomatis menggunakan pustaka Python `cdsapi`
+- **Dataset Utama:** `reanalysis-era5-land` (Dataset reanalisis cuaca permukaan paling komprehensif saat ini)
+- **Cakupan Temporal:** 1 Januari 2005 hingga 31 Desember 2024 (Data historis 20 Tahun Penuh)
+- **Resolusi Spasial:** Grid berukuran 0.1° × 0.1° (Area batas bujur lintang Jabodetabek: -6.0° s/d -7.0°S, dan 106.6° s/d 107.0°E)
+- **Resolusi Temporal:** 4 observasi per hari (Pukul 00:00, 06:00, 12:00, dan 18:00 UTC)
 
 ---
 
-## ✅ Kesimpulan Fase 1
-Kedua pilar utama data (*Input* ERA5-Land Per Jam dan *Target* BMKG Harian dari 5 Stasiun) telah berhasil diamankan sepenuhnya. 
+## 🌡️ 2. Katalog Variabel (18 Fitur Cuaca)
 
-Langkah selanjutnya (Fase 2) adalah memproses dan menyamakan (*align*) zona waktu serta dimensi kedua data ini, mengingat ERA5-Land beresolusi *Per Jam*, sedangkan data observasi BMKG beresolusi *Harian*.
+Model membutuhkan pemahaman fisika atmosfer yang lengkap, oleh karenanya 18 fitur cuaca multidimensi diekstrak secara serentak. Fitur ini terdiri dari suhu, kelembapan, radiasi, hingga evaporasi:
+
+| No | Nama Variabel Asli (API) | Singkatan | Satuan / Deskripsi |
+|:--:|:---|:---:|:---|
+| 1 | `2m_temperature` | **t2m** | Kelvin (K) - Suhu udara 2m di atas daratan |
+| 2 | `2m_dewpoint_temperature` | **d2m** | Kelvin (K) - Suhu titik embun (indikator kelembapan) |
+| 3 | `total_precipitation` | **tp** | Meter (m) - Total presipitasi curah hujan satelit |
+| 4 | `surface_pressure` | **sp** | Pascal (Pa) - Tekanan udara permukaan darat |
+| 5 | `10m_u_component_of_wind` | **u10** | m/s - Komponen kecepatan angin horizontal (Timur/Barat) |
+| 6 | `10m_v_component_of_wind` | **v10** | m/s - Komponen kecepatan angin vertikal (Utara/Selatan) |
+| 7 | `total_cloud_cover` | **tcc** | (0-1) - Kerapatan awan (tutupan awan total) |
+| 8 | `soil_temperature_level_1` | **stl1** | Kelvin (K) - Suhu tanah lapisan teratas |
+| 9 | `volumetric_soil_water_layer_1`| **swvl1** | m³/m³ - Kandungan air dalam tanah |
+| 10| `surface_latent_heat_flux` | **slhf** | J/m² - Fluks panas laten (akumulatif) |
+| 11| `surface_sensible_heat_flux` | **sshf** | J/m² - Fluks panas peka (akumulatif) |
+| 12| `surface_net_solar_radiation` | **ssr** | J/m² - Radiasi matahari netto di permukaan |
+| 13| `surface_net_thermal_radiation`| **str** | J/m² - Radiasi termal netto di permukaan |
+| 14| `evaporation` | **e** | m hujan ekuivalen - Tingkat penguapan |
+| 15| `convective_precipitation` | **cp** | m - Presipitasi konvektif (hujan badai lokal) |
+| 16| `total_column_water_vapour` | **tcwv** | kg/m² - Total uap air dalam kolom atmosfer |
+| 17| `leaf_area_index_high_vegetation`| **lai_hv**| m²/m² - Indeks kerapatan daun pohon tinggi |
+| 18| `leaf_area_index_low_vegetation` | **lai_lv**| m²/m² - Indeks kerapatan daun rumput/rendah |
+
+---
+
+## 📦 3. Output Data
+
+- **Nama File Akhir:** `ERA5_Jabodetabek_2005_2024.nc` (Berekstensi NetCDF4, standar global klimatologi).
+- **Ukuran File:** ~1.5 GB
+- **Penyimpanan:** File ini disimpan secara permanen di direktori `/content/drive/MyDrive/Riset_ERA5_Land/` agar dapat diakses seumur hidup tanpa harus meminta data ulang ke API Eropa.
+
+File `*.nc` ini nantinya akan diproses lebih lanjut oleh **Fase 2 (Quality Check)** dan **Fase 3 (Fusi Data Stasiun BMKG)** untuk membersihkan data mentah dari satelit.

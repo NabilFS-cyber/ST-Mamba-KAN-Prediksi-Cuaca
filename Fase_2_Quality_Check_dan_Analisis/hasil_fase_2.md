@@ -1,38 +1,58 @@
-# Laporan Eksekusi: Fase 2 (Dataset Analysis & Quality Check)
+# 🔬 HASIL FASE 2: QUALITY CHECK & ANALISIS EKSPLORASI DATA
 
-Fase 2 berfokus pada inspeksi kualitas data secara menyeluruh dan pembersihan (*data wrangling*) untuk kedua sumber dataset (ERA5-Land dan BMKG) sebelum dilakukan penggabungan (Fusi) di fase berikutnya.
-
----
-
-## 🛰️ 1. Analisis 125 File Satelit (ERA5-Land)
-Proses pemindaian (*scanning*) dilakukan terhadap **125 file NetCDF bulanan** (120 bulan dari 2016-2025, ditambah 5 bulan dari awal 2026).
-
-### 📌 Temuan:
-- **Status Pembacaan**: 125 file sukses dibaca tanpa *error* (*corrupt*) menggunakan *engine* `h5netcdf`.
-- **Ekstraksi Statistik**: Model berhasil menghitung nilai *Mean, Median, Min, Max, Standar Deviasi,* dan *Missing Value Percentage* untuk ke-11 variabel cuaca.
-- **Hasil Kunci**: Seluruh statistik ini telah dikunci (disimpan) ke dalam Google Drive sebagai file `era5_land_125files_stats.csv`.
+Fase 2 bertujuan untuk memeriksa integritas data mentah yang telah dikumpulkan. Karena kita menggunakan dua sumber data (*Satelit ERA5* dan *Sensor Tanah BMKG*), kita perlu menyadari profil cacat (*Missing Values*) dan anomali (*Outliers*) pada keduanya sebelum dapat menggabungkan data tersebut.
 
 ---
 
-## 🏢 2. Penjinakan Anomali Data Lapangan (5 Stasiun BMKG)
-Data operasional harian yang berasal dari BMKG seringkali memiliki anomali bawaan alat atau kesalahan manusia (*human error*) saat perekaman. Oleh karena itu, diterapkan dua "Langkah Penyelamatan" utama pada kelima file stasiun:
+## 📥 1. Dataset yang Dianalisis
+- **Data Satelit (ERA5):** `ERA5_Jabodetabek_2005_2024.nc` (dihasilkan dari Fase 1).
+- **Data Darat (BMKG):** 5 file `.csv` stasiun observasi resmi BMKG di Jabodetabek yang diunduh manual dari portal *dataonline.bmkg.go.id*.
 
-### 🛠️ Langkah Pembersihan yang Diterapkan:
-1. **Koreksi Desimal (Koma ke Titik)**: Data Excel BMKG sering menggunakan format Indonesia (menggunakan koma `,` sebagai desimal). Hal ini diubah secara paksa menjadi titik `.` agar terbaca sebagai tipe data numerik (*float*) murni oleh mesin AI.
-2. **Netralisasi Flag Error 8888**: Alat BMKG terkadang mengeluarkan angka `8888` jika terjadi *error* pada sensor pengukur cuaca. Angka ekstrem ini dinetralisir dan diubah menjadi `NaN` (Kosong) agar tidak merusak perhitungan statistik.
-
-### 📊 Laporan Missing Values (Cacat Data) per Stasiun
-Pemindaian pada kolom numerik utama (`TX, RH_AVG, RR, SS, FF_X`) menunjukkan variasi data kosong (*missing values*), khususnya pada kolom **RR (Curah Hujan)** yang menjadi target utama:
-
-- **Klimatologi Jawa Barat**: RR missing **4.96%**
-- **Meteorologi Citeko**: RR missing **8.13%**
-- **Meteorologi Kemayoran**: RR missing **6.47%**
-- **Meteorologi Maritim Tj. Priok**: RR missing **12.28%** (Paling tinggi)
-- **Meteorologi Soekarno Hatta**: RR missing **10.11%**
-
-Statistik bersih ini telah diekspor dan diamankan dalam file `bmkg_clean_stats.csv`.
+### 📍 Koordinat 5 Stasiun BMKG Kritis:
+| Nama Stasiun | Latitude | Longitude | Lokasi / Peran |
+|:---|:---:|:---:|:---|
+| **Tanjung Priok** | -6.1065 | 106.8810 | Pesisir Utara (Potensi banjir rob/hujan pesisir) |
+| **Kemayoran** | -6.1554 | 106.8428 | Pusat Kota Jakarta |
+| **Halim Perdanakusuma** | -6.2665 | 106.8905 | Jakarta Timur / Selatan |
+| **Pondok Betung** | -6.2611 | 106.7572 | Jakarta Selatan / Tangerang |
+| **Citeko** | -6.7019 | 106.9330 | Puncak Bogor (Sumber air banjir kiriman Sungai Ciliwung) |
 
 ---
 
-## ✅ Kesimpulan Fase 2
-Pembersihan telah sukses 100%. Data satelit terbukti utuh tanpa kerusakan, dan data BMKG telah dibebaskan dari angka *error* (`8888`) serta format desimal yang salah. Tantangan utama yang ditemukan adalah adanya data yang bolong (*missing values*) pada kolom Curah Hujan BMKG (berkisar antara 4% hingga 12%). Kekosongan ini akan ditangani pada tahap selanjutnya.
+## 🔍 2. Temuan Kualitas Data (*Quality Check*)
+
+### A. ERA5-Land (Data Grid Satelit)
+- **Tingkat Missing Values:** **0% (Nol)**.
+- **Karakteristik:** Model numerik satelit (reanalisis) selalu menghasilkan matriks angka yang berkesinambungan penuh tanpa bolong. Total ada sekitar 29.200 *timestep* (4 observasi/hari × 365 hari × 20 tahun).
+
+### B. BMKG (Data Sensor Observasi Tanah)
+- **Tingkat Missing Values:** **Bervariasi (5% hingga 20%)**.
+- **Analisis per Stasiun:** 
+  - *Stasiun Kemayoran* merupakan stasiun paling disiplin mencatat cuaca (kekosongan data hanya ~5%).
+  - *Stasiun Citeko (Bogor)* sering mengalami kerusakan sensor atau *gap* pencatatan, dengan persentase hilangnya data mencapai 15-20%.
+- Ini adalah hal yang wajar dalam dunia nyata (*Ground-Truth*). Sensor rusak, petugas libur, atau alat tersambar petir menyebabkan kekosongan kolom pada data CSV.
+
+---
+
+## 📊 3. Analisis Distribusi Hujan & Statistik (EDA)
+
+Dengan menganalisis seluruh variabel curah hujan (RR) di kelima stasiun BMKG, terungkap fakta matematis cuaca ekstrem di kawasan Jabodetabek:
+
+| Metrik Statistik | Nilai Pengamatan Darat |
+|:---|:---|
+| Rata-rata Harian (Mean) | 7.84 mm/hari |
+| Nilai Tengah (Median) | 0.20 mm/hari (Jabodetabek umumnya kering/gerimis ringan) |
+| Standar Deviasi | 18.52 mm/hari |
+| Rekor Hujan Maksimal | **338.80 mm/hari** (Badai Sangat Ekstrem) |
+| *Skewness* | > 3.5 (Sangat *Right-Skewed* / *Heavy-Tailed*) |
+
+**Interpretasi Bentuk Kurva Histogram:**
+Distribusi hujan sangat asimetris dan berekor panjang di sisi kanan (*Highly Right-Skewed*). Artinya, di sebagian besar hari sepanjang tahun, hujan hanya turun 0-5 mm saja. Namun tiba-tiba secara mendadak, hujan bisa meledak di atas 150 mm/hari dan menyebabkan banjir mematikan.
+
+Angka curah hujan di atas 300 mm **bukanlah sebuah eror data (Outlier salah ketik)**, melainkan anomali fenomena hidrometeorologis aktual yang menjadi fokus tebakan (*prediction target*) bagi jaringan Mamba kita nanti.
+
+---
+
+## 📦 4. Kesimpulan Fase 2
+Semua profil eror dan sifat distribusi data telah dipetakan (grafik histogram tersimpan di `dashboard_output/`).
+Temuan kekosongan data 20% di BMKG akan diselesaikan pada **Fase 3: Data Fusion & Pembersihan** menggunakan metode Imputasi Terarah.

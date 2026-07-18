@@ -1,61 +1,57 @@
-# Laporan Eksekusi: Fase 4 (Dual Brankas Creation & Titanium Shield)
+# 🔒 HASIL FASE 4: PEMBUATAN DUAL BRANKAS (TRAIN/VAL/TEST SPLIT)
 
-Fase 4 ditujukan untuk menyusun ulang dataset menjadi **Dua Brankas (Dataset) Terpisah**, yang akan digunakan untuk proses pelatihan berjenjang (*Transfer Learning*): Pre-Training dan Fine-Tuning. Fase ini sangat krusial karena kita mengincar target presipitasi ekstrem yang ditetapkan sangat tinggi, yaitu ambang batas **> 100 mm/hari** (Hujan Sangat Lebat).
-
----
-
-## 🛠️ Proses Teknis Utama
-
-### 1. Interpolasi Bilinear & Sinkronisasi Zona Waktu (WIB)
-Untuk mengekstrak data dari koordinat spasial grid satelit secara lebih akurat, metode **Bilinear Interpolation** diterapkan. Ini memberikan presisi matematis yang lebih halus dibandingkan metode *nearest* (tetangga terdekat) pada Fase 3.
-Selain itu, zona waktu satelit (GMT/UTC) digeser ke **WIB (UTC+7)** untuk menyamakan metrik waktu harian pencatatan dengan SOP (Standar Operasional Prosedur) BMKG resmi.
-
-### 2. Pembangunan Brankas 1: Pre-Training (Satelit Murni)
-- **Rentang Waktu:** 2016 hingga Mei 2024.
-- **Tujuan:** Melatih "insting dasar fisika cuaca" pada model Mamba menggunakan data volume raksasa (*Big Data*) murni dari satelit.
-- **Karakteristik:** Terdapat 15.370 baris data cuaca sejarah dengan rentang Curah Hujan Harian (RR) yang sangat lebar, yaitu dari 0.00 hingga **1224.85 mm** (badai sangat ekstrem yang terekam satelit).
-
-### 3. Pembangunan Brankas 2: Fine-Tuning (Fusi Ground-Truth BMKG)
-- **Rentang Waktu:** Juni 2024 hingga Mei 2026.
-- **Tujuan:** Menajamkan (*fine-tune*) model agar tidak lagi berhalusinasi ala satelit, melainkan mengkalibrasinya dengan alat ukur nyata di lapangan (Kunci Jawaban BMKG).
-- **Karakteristik:** Terdapat 3.625 baris data cuaca lapangan dengan curah hujan maksimum tercatat di lapangan sebesar **250.30 mm**.
-
-### 4. Implementasi "Titanium Shield"
-Agar model *Deep Learning* tidak mengalami eror kompatibilitas saat proses transfer ilmu (dari *Pre-Training* ke *Fine-Tuning*), kedua Brankas dikunci menggunakan sistem *Titanium Shield*. Sistem ini memaksa kolom/fitur di kedua tabel memiliki struktur matriks yang 100% identik dan tersusun pada urutan yang sama.
-Hasil validasi: **✅ SEMPURNA (21 Kolom Identik)**.
+Dokumen ini merangkum hasil eksekusi **Fase 4**, di mana dataset bersih yang menggabungkan fitur iklim satelit ERA5-Land dan pengamatan darat BMKG (dari Fase 3) dibagi secara strategis menjadi "Dual Brankas" untuk mempersiapkan pelatihan model.
 
 ---
 
-## 🚨 Laporan Ketimpangan Data (Imbalance Ratio)
-Penetapan ambang batas ekstrem **> 100 mm/hari** menyebabkan data menjadi sangat timpang secara distribusi kelas, yang membenarkan penggunaan algoritma khusus (Focal Loss / EVT) di masa depan.
-
-- **Brankas 1 (Satelit 2016-2024)**:
-  - Hari Aman (<100mm)   : 11.472 hari
-  - Hari Badai (>100mm)  : 3.898 hari
-  - Rasio Ketimpangan    : **1 : 3**
-
-- **Brankas 2 (BMKG 2024-2026)**:
-  - Hari Aman (<100mm)   : 3.604 hari
-  - Hari Badai (>100mm)  : 21 hari *(Sangat Langka di Lapangan)*
-  - Rasio Ketimpangan    : **1 : 172**
-
-## 💾 Hasil Akhir
-Kedua Brankas telah berhasil disterilkan, disinkronkan, dan diekspor ke dalam format modern *Parquet* yang lebih ringan dan cepat dibaca dibandingkan CSV:
-1. `brankas1_pretrain.parquet` (15.370 baris)
-2. `brankas2_finetune.parquet` (3.625 baris)
+## 📥 1. Input Data
+- **File Input:** `cleaned_merged_all_stations.pkl` (Berasal dari Fase 3)
+- **Isi:** Data gabungan 5 stasiun (Tanjung Priok, Kemayoran, Halim, Citeko, Pondok Betung) berisi 18 fitur cuaca satelit + 1 label curah hujan observasi darat.
 
 ---
 
-## 📈 Analisis Visual Distribusi Curah Hujan (Histogram)
-Berdasarkan grafik visualisasi *Distribusi Curah Hujan Dual Brankas* yang dihasilkan:
+## 🔧 2. Strategi Pembagian Data (Temporal Split)
 
-1. **Distribusi Brankas 1 (Satelit ERA5-Land - Kurva Biru)**:
-   - Terlihat bentuk kurva yang memiliki ekor kanan (*right-skewed / heavy-tailed*) yang sangat panjang, merentang hingga melewati angka **1200 mm**.
-   - Banyak sekali titik data yang sukses melewati garis putus-putus merah (Batas Ekstrem 100mm). Hal ini membuktikan bahwa pembacaan satelit cenderung kaya akan kejadian ekstrem tinggi (*high-magnitude events*). Data ini sangat sempurna untuk melatih "insting" model Deep Learning dalam mengenali pola-pola badai besar.
+Untuk mencegah kebocoran data masa depan (*temporal data leaking*), pembagian data latih (Train), validasi (Val), dan uji (Test) **TIDAK** dilakukan secara acak (*random shuffle*). Pembagian dilakukan secara berurutan berdasarkan waktu:
 
-2. **Distribusi Brankas 2 (BMKG Ground-Truth - Kurva Hijau)**:
-   - Kurva menurun dengan sangat tajam dan menumpuk di sisi kiri. Sebagian besar kejadian hujan harian di lapangan nyata berpusat di angka yang rendah (< 50 mm).
-   - Volume data yang menembus garis merah 100mm nyaris tidak terlihat rata dengan tanah (maksimal hanya mencapai sekitar 250 mm). Ini merepresentasikan realita fisik di permukaan bumi, di mana hujan ekstrem > 100 mm/hari adalah anomali cuaca yang amat sangat langka (sesuai rasio 1:172).
+- **Training Set (70%):** Periode 2005 - 2018 (Digunakan untuk melatih model)
+- **Validation Set (15%):** Periode 2019 - 2021 (Digunakan untuk kalibrasi *hyperparameter* dan *Early Stopping*)
+- **Test Set (15%):** Periode 2022 - 2024 (Hanya dibuka sekali di akhir untuk ujian nyata)
 
-**Kesimpulan Visual:** 
-Kedua grafik ini memvalidasi kejeniusan strategi "Dual Brankas" secara visual. Jika AI langsung dilatih dengan data nyata BMKG (Kurva Hijau), AI akan gagal belajar mengenali badai ekstrem karena sampelnya nyaris tidak ada. Dengan melakukan tahapan *Pre-Training* pada Brankas 1 (Kurva Biru), AI dipaksa belajar dari ribuan skenario cuaca ekstrem sejarah, sebelum akhirnya dikalibrasi (di-*Fine-Tune*) ke alam nyata menggunakan Brankas 2.
+---
+
+## 🛡️ 3. Arsitektur "Dual Brankas" (Double Vault)
+
+Untuk memaksimalkan kapabilitas AI, data dibagi ke dalam dua skenario pelatihan terpisah:
+
+### A. Brankas 1 (Satelit Murni / ERA5-Only)
+- **Fitur:** 18 Fitur cuaca satelit (Suhu, Kelembapan, Angin, dll).
+- **Label Regresi:** Kolom `tp` (Total Precipitation) bawaan dari satelit ERA5.
+- **Tujuan:** Digunakan sebagai data *Pre-training* (Fusi Awal). Satelit mungkin tidak seakurat alat BMKG, tetapi data satelit tidak memiliki jeda (*missing value*) dan mencakup area yang sangat luas. Ini membantu model belajar fisika cuaca secara umum.
+
+### B. Brankas 2 (Ground-Truth BMKG)
+- **Fitur:** 18 Fitur cuaca satelit (Sama dengan Brankas 1).
+- **Label Regresi:** Kolom `rainfall_bmkg` (Curah Hujan observasi nyata dari takaran hujan stasiun).
+- **Tujuan:** Kunci jawaban absolut. Ini adalah data final yang digunakan untuk menguji validitas model (Evaluasi Regresi HANYA dilakukan pada `Test Set` Brankas 2).
+
+---
+
+## 🚦 4. Labeling Klasifikasi (Ambang Batas Bencana)
+
+Selain regresi milimeter, data curah hujan juga dikonversi menjadi kategori klasifikasi bahaya sesuai SOP BMKG:
+- 🟢 **Aman (Kelas 0):** Curah hujan < 20 mm/hari
+- 🟡 **Waspada (Kelas 1):** Curah hujan 20 - 50 mm/hari
+- 🔴 **Siaga (Kelas 2):** Curah hujan ≥ 50 mm/hari (Potensi banjir ekstrem)
+
+---
+
+## 📦 5. Output File
+
+Semua data telah distandarisasi menggunakan `StandardScaler` (hanya di-*fit* pada Training Set untuk mencegah *leaking*), lalu diekspor menjadi *Pickle Files*:
+
+Lokasi Penyimpanan: `/content/drive/MyDrive/Riset_ERA5_Land/clean/`
+1. **Brankas 1:** `b1_train.pkl`, `b1_val.pkl`, `b1_test.pkl`
+2. **Brankas 2:** `b2_train.pkl`, `b2_val.pkl`, `b2_test.pkl`
+3. **Scaler:** `scaler_features.pkl`
+
+Semua file ini 100% steril, siap dibentuk menjadi tensor 4 dimensi pada Fase 5.

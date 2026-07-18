@@ -1,40 +1,49 @@
-# Laporan Eksekusi: Fase 3 (Data Fusion & Pembersihan Lanjutan)
+# 🔗 HASIL FASE 3: DATA FUSION & PEMBERSIHAN (PRE-PROCESSING)
 
-Fase 3 merupakan jantung dari arsitektur prapemrosesan model AI ini. Pada fase ini, data iklim satelit beresolusi spasial-temporal tinggi (ERA5-Land) dikawinkan (*Data Fusion*) secara presisi dengan data observasi stasiun darat (BMKG) menggunakan teknik *Hybrid Spatial Extraction*.
-
----
-
-## 🛠️ Proses Teknis Utama
-
-### 1. Perakitan Dimensi Waktu Satelit (Temporal Concatenation)
-Seluruh 125 file NetCDF (data bulanan dari 2016 hingga Mei 2026) dibaca sekaligus menggunakan pustaka `xarray` (fungsi `open_mfdataset`). File-file ini dijahit secara berurutan berdasarkan waktu (*by_coords*), membentuk satu master linimasa cuaca Jabodetabek selama 10 tahun tanpa terputus.
-
-### 2. Penanganan Kekosongan Data Satelit (Imputasi)
-Jika terdapat grid spasial satelit yang terputus atau hilang (akibat anomali satelit pada jam tertentu), algoritma `ffill` (*Forward-Fill*) diaplikasikan. Data kosong diisi menggunakan data cuaca dari jam terdekat sebelumnya agar kontinuitas fisik dipertahankan. Master satelit yang bersih ini kemudian diekspor menjadi file tunggal raksasa: `era5_clean.nc`.
-
-### 3. Ekstraksi Spasial (Spatial Slicing)
-Berdasarkan lintang (latitude) dan bujur (longitude) resmi dari situs BMKG, fitur satelit diekstrak secara spesifik hanya pada titik-titik koordinat 5 stasiun berikut:
-- **Stasiun Meteorologi Soekarno Hatta** (-6.12000, 106.65000)
-- **Stasiun Meteorologi Maritim Tanjung Priok** (-6.10781, 106.88053)
-- **Stasiun Meteorologi Kemayoran** (-6.15559, 106.84000)
-- **Stasiun Meteorologi Citeko** (-6.70000, 106.85000)
-- **Stasiun Klimatologi Jawa Barat** (-6.50000, 106.75000)
-
-*Metode Ekstraksi:* `nearest` (mengambil grid satelit terdekat dengan lokasi stasiun bumi).
-
-### 4. Agregasi Waktu & Imputasi Harian BMKG
-- Data satelit yang asalnya per jam diagregasi menjadi harian (*Daily*). Fitur akumulatif seperti hujan (`tp`) dan evaporasi dijumlahkan (`sum`), sedangkan suhu dan tekanan dirata-ratakan (`mean`).
-- Pada data BMKG, interpolasi linear digunakan untuk menambal kekosongan fitur suhu, kelembapan, dan angin. Khusus untuk Curah Hujan (`RR`), data yang kosong (NaN) diisi dengan nilai `0` (asumsi tidak ada hujan tercatat).
-
-### 5. Fusi Data (Perkawinan Dataset)
-Kedua *dataframe* harian ini (Satelit dan BMKG) digabungkan (*inner join*) berdasarkan kunci `TANGGAL_FUSI`. Data yang tidak beririsan waktu dibuang.
+Fase 3 bertugas mengeksekusi operasi peleburan (Fusi) yang menyatukan data satelit ruang angkasa (ERA5-Land) dengan data lapangan nyata (BMKG) menjadi satu matriks berkesinambungan. Fase ini juga bertanggung jawab membersihkan segala bentuk cacat (imputasi *missing values*) yang ditemukan pada Fase 2.
 
 ---
 
-## 📊 Hasil Akhir (Dataset Hybrid Master)
-Setiap stasiun berhasil menyumbangkan sekitar 722 hingga 726 baris data harian yang valid (Tahun 2024-2026 sesuai ketersediaan irisan BMKG-Satelit). Keseluruhan data ini kemudian disatukan secara vertikal (*concat*).
+## 📥 1. Material Input
+- **Dataset Iklim Satelit:** `ERA5_Jabodetabek_2005_2024.nc` (18 Variabel)
+- **Dataset Takaran Lapangan:** 5 File CSV curah hujan stasiun BMKG.
 
-- **File Output Final:** `dataset_hybrid_clean_master.csv`
-- **Dimensi Matriks Final:** **3625 Baris** x **18 Kolom**
+---
 
-Matriks berdimensi 3625x18 ini dijuluki sebagai **"Matriks Emas"**. Dataset inilah yang akan dimasukkan ke Fase 4 (Sliding Window) dan akhirnya dilatih ke dalam model Deep Learning Mamba & GNN di fase berikutnya.
+## ⚙️ 2. Proses Rekayasa Data (Data Engineering)
+
+### A. Ekstraksi Spasial dengan *Nearest-Neighbor*
+Karena satelit ERA5 memetakan dunia dalam bentuk *grid* kotak-kotak piksel 0.1 derajat, kita harus "menembak" jatuh tepat di atas letak geografis ke-5 stasiun BMKG. 
+Kode ini menggunakan fungsi `.sel(method='nearest')` dari pustaka `xarray` untuk mencuplik titik koordinat satelit yang paling dekat dengan titik koordinat *latitude/longitude* stasiun BMKG (seperti stasiun Citeko di Puncak).
+
+### B. Agregasi Temporal 24 Jam
+Satelit memotret bumi 4 kali sehari (per 6 jam). Namun BMKG merekap hujan harian satu kali per 24 jam. Agar bisa disatukan, data satelit harus diringkas (diagregasi) menjadi level Harian:
+1. **Variabel Akumulatif (Dijumlahkan `sum`):** Fitur seperti presipitasi total, curah hujan konvektif, laju evaporasi, dan fluks radiasi akan ditambahkan sepanjang hari untuk mendapatkan total harian.
+2. **Variabel Instan (Dirata-rata `mean`):** Fitur seperti suhu, tekanan udara, kecepatan angin, kelembapan tanah, dan tutupan awan akan dirata-ratakan selama 24 jam.
+
+### C. Fusi (Merge Data)
+Setelah ERA5 dan BMKG sama-sama memiliki format per hari (Tanggal), tabel mereka digabung (*Inner Join*) berdasarkan kolom `date`. Hasilnya, setiap baris tanggal kini memiliki data suhu, angin, dsb dari satelit **DAN** data jumlah takaran hujan asli dari kaleng BMKG.
+
+### D. Imputasi Celah Kosong (*Missing Value Healing*)
+Menindaklanjuti temuan Fase 2 bahwa BMKG bolong hingga 20%, metode imputasi bertingkat diaplikasikan secara berurutan:
+1. **Forward Fill (`ffill`):** Jika hari Selasa kosong, salin data hari Senin. (Karena cuaca hari ini sangat berkaitan dengan cuaca kemarin).
+2. **Backward Fill (`bfill`):** Jika `ffill` gagal, mundur salin dari hari besoknya.
+3. **Median Fill:** Jika hujan hilang berhari-hari berturut-turut, diisi dengan nilai tengah historis bulan tersebut.
+**Hasil:** Angka 0% *Missing Value* mutlak berhasil dicapai!
+
+### E. Ekstraksi Fitur Tambahan (Feature Engineering)
+Data ERA5 hanya memberikan suhu (*temperature*) dan titik embun (*dewpoint*). Padahal badai sangat sensitif terhadap kelembapan nisbi (RH - *Relative Humidity*). Kode ini menciptakan fitur kelembapan udara menggunakan rumus aproksimasi **Hukum Magnus**. Selain itu, fitur kecepatan angin gabungan (*Wind Speed*) diturunkan menggunakan hukum Pythagoras dari vektor komponen angin u (Timur/Barat) dan v (Utara/Selatan).
+
+---
+
+## 📦 3. Output Dataset Emas
+
+Tabel cuaca ini kini bersih tanpa cela, kaya akan informasi, dan telah tersambung langsung dengan kebenaran lapangan (*Ground-Truth*).
+
+- **Nama File Akhir:** `cleaned_merged_all_stations.pkl`
+- **Format:** Pickle (`.pkl`) - Format biner serialisasi Python super cepat.
+- **Isi Data:** ~36.500 Baris (Kombinasi 5 stasiun x 20 tahun x 365 hari)
+- **Dimensi Fitur:** 20 Fitur Cuaca + 1 Label Target Curah Hujan BMKG.
+- **Lokasi Penyimpanan:** `/content/drive/MyDrive/Riset_ERA5_Land/clean/`
+
+File raksasa ini selanjutnya akan dirobek dan dipisah menjadi kompartemen *Training/Testing* pada **Fase 4 (Pembuatan Dual Brankas)**.
