@@ -5,7 +5,7 @@ Fase 2 berfungsi sebagai "Ruang Audit Ekstrem". Menerima ratusan file mentah dar
 ---
 
 ## 📥 INPUT DARI FASE 1
-1. **125+ File NetCDF ERA5-Land** yang berisi grid koordinat piksel (Latitude/Longitude) wilayah Jabodetabek selama lebih dari 2 dekade.
+1. **120+ File NetCDF ERA5-Land** yang berisi grid koordinat piksel (Latitude/Longitude) wilayah Jabodetabek selama 10 tahun terakhir (2016-2026).
 2. **File Laporan Harian BMKG (.xlsx / .csv)** dari 5 stasiun bumi.
 
 ---

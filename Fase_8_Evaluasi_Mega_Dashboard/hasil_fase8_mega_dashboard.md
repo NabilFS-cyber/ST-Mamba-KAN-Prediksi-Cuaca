@@ -6,7 +6,7 @@ Fase 8 bertindak sebagai Pusat Komando Utama (*Command Center*), sekaligus merup
 
 ## 📥 INPUT DARI FASE SEBELUMNYA
 Fase 8 menelan hasil kerja keras dari 3 Fase pendahulu sekaligus:
-1. **Dari Fase 5:** Memuat matriks *Unseen Test Data* 4D murni yang belum pernah disentuh (Tahun 2022-2024).
+1. **Dari Fase 5:** Memuat matriks *Unseen Test Data* 4D murni yang belum pernah disentuh (Tahun 2024-2026).
 2. **Dari Fase 6:** Menginjeksi bobot kecerdasan *Limit-Breaker Edition* (`ultimate_mamba_kan.pt`).
 3. **Dari Fase 7:** Memuat bobot arsitektur usang para pesaing (`baseline_LSTM, GRU, MLP`).
 
