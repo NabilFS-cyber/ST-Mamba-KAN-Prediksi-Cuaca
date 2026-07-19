@@ -1,42 +1,45 @@
-# 🎞️ HASIL FASE 5B: 4D SPATIO-TEMPORAL WINDOWING & FLATTENED SMOTETOMEK
+# 🎞️ HASIL FASE 5: 4D SPATIO-TEMPORAL WINDOWING & FLATTENED SMOTETOMEK
 
-Fase 5B adalah tahapan esensial dalam mempersiapkan data masukan (*input*) sebelum dicerna oleh arsitektur *Deep Learning* graf. Pada tahap ini, *Dataframe* 2D diubah menjadi Tensor 4 Dimensi murni agar kecerdasan buatan (GNN + Mamba) mampu memahami hukum fisika spasial dan temporal secara bersamaan.
-
----
-
-## 📐 1. Arsitektur Tensor 4D (Spatio-Temporal Graph)
-Data dibentuk ke dalam struktur matriks berlapis dengan format ukuran `[N_Samples, Window, Stations, Features]`.
-- **N_Samples (Batch):** Jumlah kepingan observasi cuaca.
-- **Window (Waktu):** 14 hari berturut-turut (Temporal).
-- **Stations (Spasial):** 5 titik stasiun pengamatan (Tanjung Priok, Kemayoran, Halim/Soekarno-Hatta, Citeko, Jabar).
-- **Features (Karakteristik):** 17 Fitur Cuaca + 1 Indikator *One-Hot* target stasiun (Total 18 Fitur).
-
-**Dimensi Sampel yang Dihasilkan:**
-- **Brankas 1 (Pre-Train):** 15.300 matriks 4D.
-- **Brankas 2 (Fine-Tune):** 3.560 matriks 4D.
+Fase 5 bertindak sebagai Pabrik Transformasi Geometri. Di sini, data 2D berwujud tabel datar yang datang dari **Fase 4** dibentuk, dilipat, dan diisi ulang (Oversampling) agar berubah wujud menjadi matriks 4 Dimensi murni. Format 4D inilah satu-satunya bentuk data yang bisa dimengerti oleh Otak AI canggih di fase selanjutnya.
 
 ---
 
-## ⚖️ 2. Multi-Class Target & SMOTETomek Flatten Trick
-Selain meramal curah hujan persis dalam milimeter (Regresi), kita membagi intensitas bahaya menjadi 3 level kelas (Klasifikasi) yang akan diprediksi:
-- **Kelas 0:** Ringan / Aman (< 20 mm)
-- **Kelas 1:** Sedang / Waspada (20 mm - 50 mm)
-- **Kelas 2:** Lebat & Ekstrem / Siaga (> 50 mm)
+## 📥 INPUT DARI FASE 4
+Dua buah brankas aman yang memiliki jarak waktu terpisah:
+1. `brankas1_pretrain.parquet`
+2. `brankas2_finetune.parquet`
 
-### 🐛 Bug Fix Krusial (SMOTETomek)
-SMOTE (Synthetic Minority Over-sampling Technique) umumnya hanya dirancang untuk data 2D. Untuk bisa menangani graf cuaca 4D:
-1. **Flatten Trick:** Tensor 4D `[14, 5, 18]` digepengkan sementara menjadi 1 Baris dengan `1260` kolom.
-2. **Target Interpolation:** Nilai regresi curah hujan riil (`yr`) disuntikkan ke dalam matriks yang digepengkan sebelum di-SMOTE. Ini sangat krusial! Jika target curah hujan (*regresi*) tidak ikut diinterpolasi bersilangan dengan kelas, model Regresi akan buta total dan *error* prediksinya (RMSE) akan melonjak tajam >100mm.
-3. Setelah SMOTE memoles data badai (Kelas 2) menjadi setara dengan kelas Aman, matriks dirakit ulang secara matematis kembali ke wujud 4 Dimensi.
-
-**Hasil SMOTE (Keseimbangan Baru):**
-- **Brankas 1 Train:** ~5.630 sampel seimbang per kelas.
-- **Brankas 2 Train:** ~2.087 sampel seimbang per kelas.
+Tabel data di dalam brankas tersebut mencatat cuaca harian dan curah hujan dengan ketimpangan ekstrem di mana data badai (Siaga) luar biasa jarang terjadi dibandingkan hari cerah.
 
 ---
 
-## 🔒 3. Splitting & Standarisasi Emas
-Data dipecah ke dalam proporsi Emas: **70% (Train) - 15% (Validation) - 15% (Test)**.
-Penskalaan menggunakan *StandardScaler* hanya diterapkan ketat pada 17 fitur cuaca, dan dengan sengaja mem- *bypass* / tidak menyentuh kolom logika indikator One-Hot stasiun.
+## 📐 LOGIKA KODE & REKAYASA STRUKTUR DATA
 
-Seluruh output Tensor ini lalu disimpan dalam format PyTorch `.pt` langsung ke Google Drive, siap disuapkan ke dalam *"Mulut"* raksasa **ST-Mamba-GNN (Fase 6)**.
+### 1. Eksekusi 4D Spatio-Temporal Windowing
+Tabel datar dihancurkan dan dirakit ulang ke dalam susunan dimensi `[N_Samples, Window, Stations, Features]`:
+- **N_Samples (Batch):** 15.300 matriks keping observasi (Brankas 1) & 3.560 matriks (Brankas 2).
+- **Window (Waktu):** 14 hari cuaca mundur direkam utuh sebagai histori (*Temporal*).
+- **Stations (Spasial):** 5 titik stasiun BMKG Jabodetabek (Kemayoran, Tj Priok, Halim, Citeko, Jabar).
+- **Features (Karakteristik):** 17 Fitur Cuaca + 1 Indikator Stasiun *One-Hot* (Total 18 Fitur).
+
+### 2. Penetapan Multi-Class (3 Level)
+Selain melatih AI untuk meramal angka mutlak milimeter (Regresi), skrip pada fase ini mendidik AI untuk membunyikan alarm keselamatan (Klasifikasi) berdasarkan 3 level bahaya:
+- **Kelas 0 (Aman):** Hujan < 20 mm
+- **Kelas 1 (Waspada):** Hujan 20 mm - 50 mm
+- **Kelas 2 (Siaga / Badai):** Hujan > 50 mm
+
+### 3. Bug Fix Krusial: SMOTETomek Flatten Trick
+Algoritma SMOTE secara *default* hanya bisa menangani data 2D dan buta pada kasus Regresi. Jika dipaksakan pada matriks 4D, nilai Regresi curah hujannya (*yr*) akan hancur teracak.
+Oleh karenanya, dilakukan *Flatten Trick*:
+1. Matriks 4D digepengkan ke 2D.
+2. Label curah hujan (*yr*) **disuntikkan diam-diam** ke dalam ujung matriks.
+3. SMOTE menggandakan fitur cuaca ekstrem (Kelas 2) sekaligus nilai *regresi* milimeter aslinya.
+4. Matriks dirajut dan dikembalikan lagi ke wujud 4D.
+
+Berkat trik ini, data cuaca buruk (*Siaga*) yang tadinya langka, kini memiliki jumlah setara (~5.630 sampel per kelas di Brankas 1), menghilangkan ketimpangan secara elegan.
+
+---
+
+## ➡️ OUTPUT UNTUK FASE SELANJUTNYA
+Kepingan matriks berwujud 4D yang telah seimbang kelasnya ini dibagi menjadi formasi *Emas* **(70% Train, 15% Val, 15% Test)**, dan disimpan ke Google Drive dalam wujud tensor biner PyTorch (`.pt`).
+Kepingan Tensor `.pt` ini langsung disuapkan ke dalam mulut **Fase 6 (The God-Tier Limit-Breaker Model)** dan **Fase 7 (Fair Baseline Comparison)** untuk dilakukan pertempuran komputasional antar *Artificial Intelligence*.

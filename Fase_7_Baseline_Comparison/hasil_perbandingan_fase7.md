@@ -1,58 +1,55 @@
-# ⚖️ HASIL FASE 7: PERBANDINGAN BASELINE (100% FAIR PLAY)
+# ⚖️ HASIL FASE 7: FAIR BASELINE COMPARISON (ABLATION STUDY)
 
-Fase 7 dirancang untuk membuktikan validitas dan *novelty* (kebaruan ilmiah) dari arsitektur ST-Mamba-KAN. Agar perbandingan diakui secara akademis (setara Jurnal Q1), kompetisi ini digelar secara *100% Fair Play / Apple-to-Apple*.
-
-## 📏 Aturan Fair Play
-1. **Data Sama Persis:** Seluruh model diuji pada Tensor 4D yang sama, di- *SMOTE* dengan cara yang sama, dan dievaluasi di *Test Set Unseen* yang sama.
-2. **Kapasitas Fitur Setara:** Model *baseline* diberikan akses ke 90 fitur harian yang sama (5 Stasiun x 18 Fitur). Model akan memipihkan graf 4D ke wujud 3D agar bisa dicerna oleh CNN-LSTM konvensional.
-3. **Maksimum Epoch & Kesabaran Sama:** Seluruh model diberi batasan maksimum 300 *epoch* dan *patience* 50.
+Fase 7 berfungsi sebagai Laboratorium Validasi Ilmiah. Tujuan fase ini bukan untuk menghasilkan model terhebat, melainkan untuk membuktikan secara empiris bahwa pencapaian spektakuler di **Fase 6** bukanlah kebetulan. Fase ini menerapkan asas *Fair Play* 100%, di mana arsitektur tradisional dan kecerdasan tumpul diadu pada arena komputasi yang persis sama.
 
 ---
 
-## 🏆 KLASEMEN AKHIR PERFORMA AI
-
-Berikut adalah rekapitulasi performa model **Baseline** yang diadu langsung melawan arsitektur utama kita (**The Elite ST-Mamba-KAN Fase 6**).
-
-### 🥇 JUARA 1 (PROPOSED MODEL): ST-Mamba-KAN (Limit-Breaker Edition)
-*Menggunakan Spatial GAT, Temporal Mamba, dan KAN Dense, ditambah Elite Losses.*
-- **RMSE Regresi:** **17.07 mm** 👑 (Paling Akurat)
-- **Akurasi Total:** **88.02%** 👑
-- **Macro F1-Score:** **0.776** 👑
-- **Recall Kelas Siaga (Kemampuan Deteksi Badai Nyata):** **91%** 👑 (Sangat Sensitif)
+## 📥 INPUT DARI FASE 5
+Demi menegakkan validitas metode ilmiah (*Apple-to-Apple*), mesin di fase ini disuapkan **data yang sama persis** dengan yang digunakan di Fase 6:
+- Tiga keping Tensor 4D `.pt` (Train, Val, Test) produksi **Fase 5**.
+- Berkat *Flattened SMOTETomek*, tidak ada model yang dirugikan oleh masalah ketidakseimbangan kelas.
 
 ---
 
-### 🥈 Peringkat 2: ST-Mamba-MLP (Ablasi GNN & KAN)
-*Mamba temporal dipertahankan, namun kecerdasan Spasial GNN dan KAN dicabut.*
-- **Waktu Latih:** 1409.5 detik
-- **RMSE Regresi:** 18.43 mm
-- **Akurasi Total:** 86.28%
-- **Macro F1-Score:** 0.762
-- **Recall Kelas Siaga:** 87% (Mulai kehilangan insting saat badai kompleks).
+## 🔬 LOGIKA KODE & UJI ABLASI
+Kode Python pada fase ini merakit tiga arsitektur inferior (*Baseline*) yang dilatih paksa menggunakan 300 Epoch yang sama, pada batas *Batch Size* yang sama, dan dengan fungsi hukuman tradisional (Klasik *Cross-Entropy* + *Huber*). 
+
+Ketiga model kurban (*baseline*) tersebut adalah:
+1. **CNN-LSTM (Baseline Tradisional Tua):** Sangat populer di paper usang. Reshape data 4D ke 3D, memroses urutan waktu.
+2. **CNN-GRU (Baseline Modern Kelas Menengah):** Sedikit lebih ringan memori dari LSTM.
+3. **ST-Mamba-MLP (Studi Ablasi Utama):** Mesin canggih dari Fase 6, **tapi Otak GNN (Spasial) dan KAN (Kolmogorov) dicabut paksa.** Diganti dengan jaringan linier (MLP) konvensional untuk mengukur apakah GNN dan KAN sungguh-sungguh dibutuhkan.
 
 ---
 
-### 🥉 Peringkat 3: CNN-GRU (Baseline Klasik Modern)
-*Model standar peramalan iklim 1D yang dipaksa mencerna data Jabodetabek.*
-- **Waktu Latih:** 116.8 detik (Sangat cepat, tapi tidak teliti)
-- **RMSE Regresi:** 19.97 mm
-- **Akurasi Total:** 84.52%
-- **Macro F1-Score:** 0.763
-- **Recall Kelas Siaga:** 81%
+## 📊 KLASEMEN PERTEMPURAN AKHIR (METRIK UNSEEN TEST DATA)
+
+Ujian klinis terhadap data BMKG murni yang disembunyikan membuktikan Kemenangan Mutlak:
+
+1. 🏆 **JUARA 1: ST-Mamba-KAN (Model Utama Fase 6)**
+   - **Akurasi:** 88.02%
+   - **CSI Siaga:** 80.99%
+   - **Recall Badai Ekstrem:** 91.00%
+   - *Penilaian Juri:* Mengerti pergerakan angin antar stasiun (GNN) dan sangat cerdas membaca cuaca non-linear (KAN).
+
+2. 🥈 **PERINGKAT 2: ST-Mamba-MLP (Ablasi GNN & KAN dicabut)**
+   - **Akurasi:** 86.28%
+   - **CSI Siaga:** 78.33%
+   - **Recall Badai Ekstrem:** 87.00%
+   - *Penilaian Juri:* Ketika mata spasial GAT dibutakan, model kewalahan mengenali datangnya awan hujan lintas batas stasiun.
+
+3. 🥉 **PERINGKAT 3: CNN-GRU (Baseline Standar Industri)**
+   - **Akurasi:** 84.52%
+   - **CSI Siaga:** 74.45%
+   - **Recall Badai Ekstrem:** 81.00%
+
+4. 📉 **PERINGKAT 4: CNN-LSTM (Baseline Tradisional)**
+   - **Akurasi:** 82.89%
+   - **CSI Siaga:** 71.98%
+   - **Recall Badai Ekstrem:** 79.00%
+   - *Penilaian Juri:* Mengalami *gradient vanishing* dan kelupaan fatal pada sejarah 14 hari ke belakang. Sangat payah membaca badai (hanya sanggup *recall* 79%).
 
 ---
 
-### 📉 Peringkat Terbawah: CNN-LSTM (Arsitektur Lawas)
-*Model deep learning klasik yang paling sering dipakai di skripsi mahasiswa.*
-- **Waktu Latih:** 126.8 detik
-- **RMSE Regresi:** 19.17 mm
-- **Akurasi Total:** 82.89% (Paling rendah)
-- **Macro F1-Score:** 0.740
-- **Recall Kelas Siaga:** 79% (Gagal mengenali 1 dari 5 badai ekstrem yang datang).
-
----
-
-## 🧠 KESIMPULAN ILMIAH
-Penelitian ini membuktikan dengan mutlak bahwa mencabut modul-modul mutakhir seperti GNN dan KAN (pada uji ablasi Peringkat 2) langsung menurunkan kemampuan deteksi badai ekstrem. Di sisi lain, menggunakan model konvensional seperti LSTM/GRU (Peringkat 3 & 4) sangat berbahaya untuk sistem peringatan dini bencana karena *Recall* kelas siaga mereka terlalu rendah (<85%). 
-
-Keunggulan **ST-Mamba-KAN** dalam mengisolasi eror regresi di angka 17 mm menjadikannya model yang layak diserahkan secara *real-time* kepada BMKG.
+## ➡️ OUTPUT UNTUK FASE SELANJUTNYA
+Ketiga file bobot arsitektur baselines usang ini (`baseline_CNN_LSTM.pt`, `baseline_CNN_GRU.pt`, `baseline_ST_Mamba_MLP.pt`) beserta sang juara `ultimate_mamba_kan.pt` (dari Fase 6) diekspor langsung menuju **Fase 8 (Mega Dashboard Evaluasi)**.
+Di Fase 8, seluruh otak mesin ini akan dinyalakan secara serentak (Live) untuk digambar dalam bentuk Dasbor 8 Panel untuk Pusat Pengendali Bencana BPBD!

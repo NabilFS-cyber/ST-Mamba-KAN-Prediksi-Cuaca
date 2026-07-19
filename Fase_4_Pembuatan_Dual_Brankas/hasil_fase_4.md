@@ -1,50 +1,38 @@
-# 🔐 HASIL FASE 4: PEMBUATAN DUAL BRANKAS (PRE-TRAIN & FINE-TUNE)
+# 🔒 HASIL FASE 4: DUAL BRANKAS & TITANIUM SHIELD
 
-Fase 4 adalah proses krusial di mana data bersih dari Fase 3 dipisahkan secara struktural menjadi dua kantong memori utama (Dual Brankas). Strategi ini dibuat khusus untuk memfasilitasi arsitektur AI tingkat lanjut yang membutuhkan pra-latihan panjang sebelum penyesuaian akhir di dunia nyata.
-
----
-
-## 🎯 1. Aturan Sakral (Target Deteksi Ekstrem)
-Sistem peringatan dini tidak peduli dengan gerimis. Fokus utama model ini adalah mendeteksi ancaman nyata.
-- **Batas Ekstrem (Treshold):** `> 100 mm / hari` (Kategori: Hujan Sangat Lebat / Badai)
-- Data yang melampaui batas ini diberi label bahaya **1 (EXTREME)**, sisanya diberi label **0**.
+Fase 4 berfungsi sebagai sistem arsitektur pengamanan data dan sinkronisasi lanjutan. Tabel raksasa hasil hibridasi dari **Fase 3** diolah di sini untuk memisahkan rentang waktu agar tidak terjadi kebocoran kebocoran informasi masa depan ke masa lalu saat model dilatih (*Data Leakage*), serta menyelaraskan jam fisika antardimensi.
 
 ---
 
-## 🚀 2. Strategi Arsitektur "RAM-Safe" & Konversi Zona Waktu
-Untuk mencegah *Crash* akibat kehabisan memori (*Out of RAM*) saat mengolah file netCDF master:
-1. Data satelit ERA5 diekstrak per stasiun *sebelum* dimuat secara penuh ke memori Pandas. Proses penarikan menggunakan **Bilinear Interpolation** untuk mendapatkan letak geografis yang sangat akurat di 5 Stasiun BMKG.
-2. Waktu universal satelit (GMT) digeser ke waktu lokal Jakarta **WIB (GMT+7)**. Ini adalah SOP resmi BMKG agar pembacaan hujan sesuai dengan waktu lokal terjadinya bencana.
+## 📥 INPUT DARI FASE 3
+- File tunggal yang bersih: `dataset_satelit_stasiun_bersih.parquet` yang berisi integrasi data satelit (Era5-Land) dan Stasiun BMKG.
 
 ---
 
-## 📦 3. Konstruksi Dual Brankas & Hasil Matriks
+## 🛡️ LOGIKA KODE & ALGORITMA PENGAMANAN
 
-Data dibelah menjadi dua segmen waktu yang sangat tegas.
+Pada Fase 4 ini, sistem menetapkan standar operasional cuaca yang sangat ketat:
 
-### 🛡️ Brankas 1: Pre-Training (Satelit Murni)
-Digunakan untuk membangun insting dasar model AI terhadap dinamika cuaca Jabodetabek selama 8 tahun tanpa jeda.
-- **Rentang Waktu:** 2016 hingga Mei 2024
-- **Komposisi:** Murni data iklim satelit (ERA5-Land)
-- **Output:** `brankas1_pretrain.parquet`
-- **Dimensi Akhir:** **15.370 baris** (21 kolom)
+### 1. Sinkronisasi Zona Waktu (GMT ke WIB)
+Satelit Eropa merekam waktu berdasarkan GMT (Universal Time), sementara BMKG mencatat berbasis Waktu Indonesia Barat (WIB). Jika tidak dikoreksi, pola mendung satelit akan tertinggal 7 jam dari badai aslinya di daratan Jakarta. 
+Skrip memperbaiki ini dengan menggeser (*Shift*) tanggal dan jam satelit menjadi **GMT+7** sebelum dilakukan *resampling* harian.
 
-### 💎 Brankas 2: Fine-Tuning (Fusi BMKG Ground-Truth)
-Digunakan sebagai "Buku Kunci Jawaban Resmi". Di sini, data satelit bersatu dengan data observasi hujan riil stasiun BMKG.
-- **Rentang Waktu:** Juni 2024 hingga Mei 2026
-- **Komposisi:** Data Satelit (ERA5) + Data Lapangan (BMKG)
-- **Output:** `brankas2_finetune.parquet`
-- **Dimensi Akhir:** **3.625 baris** (21 kolom)
+### 2. Algoritma RAM-Safe (Bilinear Interpolation per Stasiun)
+Untuk mencegah RAM Google Colab meledak karena mengkalkulasi jutaan titik secara bersamaan, skrip menggunakan metode *Bilinear Interpolation* yang mengekstrak nilai piksel cuaca satelit langsung secara terfokus pada titik koordinat persis setiap stasiun, stasiun demi stasiun.
+
+### 3. Penetapan "Threshold Sakral" (Badai Ekstrem > 100 mm)
+Data dipindai untuk mencari target anomali tertinggi: Curah Hujan Ekstrem (di atas 100 mm/hari). Laporan Fase 4 menemukan ketimpangan kelas badai yang sangat brutal (Rasio 1 : 172). Artinya, badai mematikan ini sangat langka (minoritas super), yang mengharuskan algoritma *SMOTETomek* untuk turun tangan nanti di Fase 5.
+
+### 4. Pembentukan "Titanium Shield" (Split Data Aman)
+Tabel raksasa dipecah menjadi dua rentang waktu absolut (Dual Brankas) berstruktur pelindung 21 Kolom (17 Cuaca Satelit + 4 Indikator Ekstrem).
+- **Brankas 1 (Pre-Train):** Rentang Tahun 2000 - 2021 (Bahan ajar utama masa lalu).
+- **Brankas 2 (Fine-Tune / Test):** Rentang Tahun 2022 - 2024 (Data era modern untuk ujian dan adaptasi).
 
 ---
 
-## 🛡️ 4. Inovasi "Titanium Shield" & Laporan Ketimpangan
+## ➡️ OUTPUT UNTUK FASE SELANJUTNYA
+Bahan ajar telah diamankan ke dalam dua *Vault* yang terpisah sempurna:
+1. `brankas1_pretrain.parquet`
+2. `brankas2_finetune.parquet`
 
-Sebuah mekanisme pertahanan (*Titanium Shield*) diaktifkan pada akhir program untuk memastikan bahwa **Brankas 1 dan Brankas 2 memiliki susunan kolom yang identik 100% (21 Kolom)**. Kolom-kolom BMKG yang tidak ada di tahun-tahun awal satelit disuntikkan dengan nilai kosong secara simetris, mencegah malfungsi arsitektur neural network di Fase 6.
-
-### 📊 Laporan Ketimpangan Data (Imbalance Ratio)
-Dari visualisasi histogram `RR (mm)`, terlihat jelas sifat alamiah hujan ekstrem:
-- Pada **Brankas 1**, rasio kejadian hari aman melawan hari badai (>100mm) adalah **1 : 3**. (Kondisi cukup merata).
-- Pada **Brankas 2** (Dunia Nyata BMKG), dari ribuan hari, badai ekstrem hanya muncul **21 kali** (Rasio ketimpangan luar biasa ekstrem **1 : 172**).
-
-Fenomena kelangkaan ekstrem inilah yang akan diselesaikan secara algoritmik di Fase 6 (Model Pelatihan) menggunakan *Loss Function* berbobot denda.
+Kedua *brankas* 2 Dimensi ini **dikirim menuju Fase 5 (4D Spatio-Temporal Windowing)**. Di sana, data datar ini akan dilipat secara matematis ke dalam ruang 4 Dimensi, dan kelemahannya (kelangkaan data badai 1:172) akan disembuhkan oleh algoritma SMOTE.
