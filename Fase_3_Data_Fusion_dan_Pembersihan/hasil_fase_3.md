@@ -17,7 +17,7 @@ Karena satelit ERA5 memetakan dunia dalam bentuk *grid* kotak-kotak piksel 0.1 d
 Kode ini menggunakan fungsi `.sel(method='nearest')` dari pustaka `xarray` untuk mencuplik titik koordinat satelit yang paling dekat dengan titik koordinat *latitude/longitude* stasiun BMKG (seperti stasiun Citeko di Puncak).
 
 ### B. Agregasi Temporal 24 Jam
-Satelit memotret bumi 4 kali sehari (per 6 jam). Namun BMKG merekap hujan harian satu kali per 24 jam. Agar bisa disatukan, data satelit harus diringkas (diagregasi) menjadi level Harian:
+Satelit merekam cuaca bumi secara per jam (24 kali sehari). Namun BMKG merekap hujan harian satu kali per 24 jam. Agar bisa disatukan, data satelit per jam ini harus diringkas (diagregasi) menjadi level Harian:
 1. **Variabel Akumulatif (Dijumlahkan `sum`):** Fitur seperti presipitasi total, curah hujan konvektif, laju evaporasi, dan fluks radiasi akan ditambahkan sepanjang hari untuk mendapatkan total harian.
 2. **Variabel Instan (Dirata-rata `mean`):** Fitur seperti suhu, tekanan udara, kecepatan angin, kelembapan tanah, dan tutupan awan akan dirata-ratakan selama 24 jam.
 

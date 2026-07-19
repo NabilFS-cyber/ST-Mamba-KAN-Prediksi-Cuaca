@@ -10,7 +10,7 @@ Fase 1 adalah titik nol dari pengembangan arsitektur ST-Mamba-KAN. Pada tahap in
 - **Dataset Utama:** `reanalysis-era5-land` (Dataset reanalisis cuaca permukaan)
 - **Cakupan Temporal:** 2016 hingga Mei 2026 (Data historis satelit 10+ Tahun)
 - **Resolusi Spasial:** Grid berukuran 0.1° × 0.1° (Area batas bujur lintang Jabodetabek)
-- **Resolusi Temporal:** 4 observasi per hari (Pukul 00:00, 06:00, 12:00, dan 18:00 UTC)
+- **Resolusi Temporal:** Observasi per jam (24 rekam data per hari)
 
 ---
 

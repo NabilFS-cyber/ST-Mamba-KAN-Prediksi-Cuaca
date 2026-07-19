@@ -23,7 +23,7 @@ Fase 2 bertujuan untuk memeriksa integritas data mentah yang telah dikumpulkan. 
 
 ### A. ERA5-Land (Data Grid Satelit)
 - **Tingkat Missing Values:** **0% (Nol)**.
-- **Karakteristik:** Model numerik satelit (reanalisis) selalu menghasilkan matriks angka yang berkesinambungan penuh tanpa bolong. Total belasan ribu *timestep* (4 observasi/hari × 365 hari × 10+ tahun).
+- **Karakteristik:** Model numerik satelit (reanalisis) selalu menghasilkan matriks angka yang berkesinambungan penuh tanpa bolong. Total puluhan ribu *timestep* (24 observasi/hari × 365 hari × 10+ tahun).
 
 ### B. BMKG (Data Sensor Observasi Tanah)
 - **Tingkat Missing Values:** **Bervariasi (5% hingga 20%)**.
