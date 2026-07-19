@@ -51,7 +51,7 @@ Sebagai pasangan kalibrasi (Ground Truth), data dari stasiun observasi darat BMK
 
 ## 📦 4. Output Data
 
-- **Nama File Akhir:** `ERA5_Jabodetabek_2016_2026.nc` (Berekstensi NetCDF4, standar global klimatologi).
+- **Nama File Akhir:** Ratusan file bulanan dengan format `dataset_era5_land_jabodetabek_YYYY_MM.nc` (mulai dari 2016_01 hingga 2026_05).
 - **Penyimpanan:** File ini disimpan secara permanen di direktori `/content/drive/MyDrive/Riset_ERA5_Land/` agar dapat diakses tanpa harus mengunduh ulang.
 
 File data mentah dari satelit dan stasiun darat ini nantinya akan diproses lebih lanjut oleh **Fase 2 (Quality Check)** dan **Fase 3 (Fusi Data)**.

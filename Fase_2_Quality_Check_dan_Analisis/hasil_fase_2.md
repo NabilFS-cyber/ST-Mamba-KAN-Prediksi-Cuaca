@@ -5,7 +5,7 @@ Fase 2 bertujuan untuk memeriksa integritas data mentah yang telah dikumpulkan. 
 ---
 
 ## 📥 1. Dataset yang Dianalisis
-- **Data Satelit (ERA5):** `ERA5_Jabodetabek_2016_2026.nc` (dihasilkan dari Fase 1).
+- **Data Satelit (ERA5):** Kumpulan file bulanan `dataset_era5_land_jabodetabek_YYYY_MM.nc` (dihasilkan dari Fase 1).
 - **Data Darat (BMKG):** 5 file `.csv` stasiun observasi resmi BMKG di Jabodetabek yang diunduh manual dari portal *dataonline.bmkg.go.id*.
 
 ### 📍 Koordinat 5 Stasiun BMKG Kritis:
