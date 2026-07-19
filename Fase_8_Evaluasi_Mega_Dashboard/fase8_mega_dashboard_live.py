@@ -1,7 +1,7 @@
 # =====================================================================
-# PHASE 9 – MEGA DASHBOARD EVALUASI (100% FULL LIVE INFERENCE)
+# PHASE 8 – MEGA DASHBOARD EVALUASI (100% FULL LIVE INFERENCE)
 # =====================================================================
-# Script ini secara langsung memuat model PyTorch dari Fase 8 dan Fase 10,
+# Script ini secara langsung memuat model PyTorch dari Fase 7 dan Fase 6,
 # menjalankan inferensi secara LIVE pada Test Set, lalu menggambar
 # 8-Panel Mega Dashboard berdasarkan hasil evaluasi aktual!
 # =====================================================================
@@ -44,7 +44,7 @@ ts_loader_bmkg = DataLoader(ds_b2_ts, batch_size=BATCH_SIZE, shuffle=False)
 ts_loader_fusi = DataLoader(ds_ts_fusion, batch_size=BATCH_SIZE, shuffle=False)
 
 # ============================================================
-# 3. SEMUA ARSITEKTUR MODEL (FASE 8 & FASE 10)
+# 3. SEMUA ARSITEKTUR MODEL (FASE 7 & FASE 6)
 # ============================================================
 # --- Baseline Klasik (Reshape 4D ke 3D internal) ---
 class CNN_LSTM_Baseline(nn.Module):
@@ -89,7 +89,7 @@ class ST_Mamba_MLP_Ablation(nn.Module):
         pool = torch.cat([x.mean(dim=1), x.max(dim=1)[0]], dim=1)
         return self.reg_head(pool).squeeze(-1), self.cls_head(pool)
 
-# --- Elite Ultimate GAT-Mamba-KAN (Fase 10) ---
+# --- Elite Ultimate GAT-Mamba-KAN (Fase 6) ---
 class KANLinear(nn.Module):
     def __init__(self, in_features, out_features, grid_size=4, spline_order=3):
         super().__init__()
@@ -144,7 +144,7 @@ class MambaBlock(nn.Module):
 class Ultimate_GAT_Mamba_KAN(nn.Module):
     def __init__(self, hidden_dim, mamba_layers, is_classifier=True):
         super().__init__()
-        self.proj = nn.Linear(18, hidden_dim) 
+        self.proj = nn.Linear(18, hidden_dim)
         self.gat = nn.MultiheadAttention(embed_dim=hidden_dim, num_heads=4, batch_first=True)
         self.spatial_agg = nn.Linear(5 * hidden_dim, hidden_dim)
         self.mambas = nn.ModuleList([MambaBlock(hidden_dim) for _ in range(mamba_layers)])
@@ -155,7 +155,7 @@ class Ultimate_GAT_Mamba_KAN(nn.Module):
         B, T, S, _ = x_4d.shape
         x_proj = self.proj(x_4d)
         x_res = x_proj.reshape(B * T, S, -1)
-        x_gat, _ = self.gat(x_res, x_res, x_res) 
+        x_gat, _ = self.gat(x_res, x_res, x_res)
         x_gat = F.silu(x_gat) + x_res
         x_gat = x_gat.reshape(B, T, -1)
         x_temp = F.relu(self.spatial_agg(x_gat))
@@ -172,9 +172,9 @@ models = {
     'LSTM': CNN_LSTM_Baseline().to(device),
     'GRU': CNN_GRU_Baseline().to(device),
     'MLP': ST_Mamba_MLP_Ablation().to(device),
-    # Fase 10 Regressor menggunakan parameter mutlak Limit-Breaker (384, 4)
+    # Fase 6 Regressor menggunakan parameter mutlak Limit-Breaker (384, 4)
     'ELITE_Reg': Ultimate_GAT_Mamba_KAN(hidden_dim=384, mamba_layers=4, is_classifier=False).to(device),
-    # Fase 10 Classifier menggunakan parameter mutlak Optuna (192, 3)
+    # Fase 6 Classifier menggunakan parameter mutlak Optuna (192, 3)
     'ELITE_Cls': Ultimate_GAT_Mamba_KAN(hidden_dim=192, mamba_layers=3, is_classifier=True).to(device)
 }
 
@@ -185,19 +185,19 @@ for name, filename in file_map.items():
         models[name].eval(); print(f" ✅ Baseline {name} dimuat!")
     except: print(f" ⚠️ Peringatan: File {filename} gagal dimuat.")
 
-# Memuat Fase 10 (Ultimate GAT-Mamba-KAN) dengan EMA
+# Memuat Fase 6 (Ultimate GAT-Mamba-KAN) dengan EMA
 try:
     ckpt_reg = torch.load(f'{CLEAN_ROOT}/ultimate_mamba_kan_reg.pt', map_location=device, weights_only=False)
     models['ELITE_Reg'].load_state_dict(ckpt_reg['state'])
     for n, p in models['ELITE_Reg'].named_parameters(): p.data = ckpt_reg['ema'][n]
-    models['ELITE_Reg'].eval(); print(" ✅ Ultimate GAT-Mamba-KAN Regressor (Fase 10) Dimuat!")
-    
+    models['ELITE_Reg'].eval(); print(" ✅ Ultimate GAT-Mamba-KAN Regressor (Fase 6) Dimuat!")
+
     ckpt_cls = torch.load(f'{CLEAN_ROOT}/ultimate_mamba_kan_cls_best.pt', map_location=device, weights_only=False)
     models['ELITE_Cls'].load_state_dict(ckpt_cls['state'])
     for n, p in models['ELITE_Cls'].named_parameters(): p.data = ckpt_cls['ema'][n]
-    models['ELITE_Cls'].eval(); print(" ✅ Ultimate GAT-Mamba-KAN Classifier (Fase 10) Dimuat!")
+    models['ELITE_Cls'].eval(); print(" ✅ Ultimate GAT-Mamba-KAN Classifier (Fase 6) Dimuat!")
 except Exception as e:
-    print(f" ❌ Gagal memuat Fase 10: {e}")
+    print(f" ❌ Gagal memuat Fase 6: {e}")
 
 # ============================================================
 # 5. FUNGSI EVALUASI DINAMIS (LIVE)
@@ -219,7 +219,7 @@ def evaluate_model(model_reg, model_cls=None, is_decoupled=False):
             if is_decoupled: vp_cls.append(model_cls(X.to(device)).cpu())
             else: _, out_c = model_reg(X.to(device)); vp_cls.append(out_c.cpu())
             vt_cls.append(yc.cpu())
-            
+
     probs = F.softmax(torch.cat(vp_cls), dim=1).numpy()
     vp_c = np.argmax(probs, axis=1); vt_c = torch.cat(vt_cls).numpy()
 
@@ -245,9 +245,9 @@ try:
     # ELITE (Menggunakan Evaluasi Terpisah)
     r_rmse, r_acc, r_f1, r_csi, r_rec, elite_probs, elite_preds, true_vals = evaluate_model(models['ELITE_Reg'], models['ELITE_Cls'], is_decoupled=True)
     results['ELITE'] = {'RMSE': r_rmse, 'Acc': r_acc, 'F1': r_f1, 'CSI': r_csi, 'Recall': r_rec}
-    print(f" [OK] ELITE GNN-MAMBA (FASE 10) | RMSE: {r_rmse:.2f} | Acc: {r_acc:.1f}% | CSI: {r_csi:.1f}%")
+    print(f" [OK] ELITE GNN-MAMBA (FASE 6) | RMSE: {r_rmse:.2f} | Acc: {r_acc:.1f}% | CSI: {r_csi:.1f}%")
 except:
-    print(" [GAGAL] Fase 10 Error.")
+    print(" [GAGAL] Fase 6 Error.")
 
 # ============================================================
 # 6. VISUALISASI MEGA DASHBOARD 8 PANEL (REAL-DATA)
@@ -269,12 +269,12 @@ ax1 = plt.subplot(4, 2, 1)
 ax1.plot(epochs_range, loss_lstm, label='CNN-LSTM (Stagnan Ep 44)', color=palette[0], lw=2.5, alpha=0.8)
 ax1.plot(epochs_range, loss_gru, label='CNN-GRU (Stagnan Ep 43)', color=palette[1], lw=2.5, alpha=0.8)
 ax1.plot(epochs_range, loss_mlp, label='ST-Mamba-MLP (Stagnan Ep 36)', color=palette[2], lw=2.5, alpha=0.8, linestyle='--')
-ax1.plot(epochs_range, loss_elite, label='GAT-Mamba-KAN (Fase 10)', color=palette[3], lw=4)
+ax1.plot(epochs_range, loss_elite, label='GAT-Mamba-KAN (Fase 6)', color=palette[3], lw=4)
 ax1.set_title('[1] Stabilitas Konvergensi & Ketahanan Early Stopping', fontweight='bold', pad=15)
 ax1.set_xlabel('Epoch Latih'); ax1.set_ylabel('Loss Validasi'); ax1.legend()
 
 ax2 = plt.subplot(4, 2, 2)
-models_lst = ['CNN-LSTM', 'CNN-GRU', 'ST-Mamba-MLP', 'Ultimate GAT-Mamba-KAN\n(Fase 10)']
+models_lst = ['CNN-LSTM', 'CNN-GRU', 'ST-Mamba-MLP', 'Ultimate GAT-Mamba-KAN\n(Fase 6)']
 recalls = [results['LSTM']['Recall'], results['GRU']['Recall'], results['MLP']['Recall'], results['ELITE']['Recall']]
 bars2 = ax2.bar(models_lst, recalls, color=palette, edgecolor='black', linewidth=1.5)
 ax2.set_title('[2] Jaminan Keselamatan: Recall Deteksi Badai Ekstrem (Siaga)', fontweight='bold', pad=15)
@@ -299,7 +299,7 @@ ax4.set_ylabel('RMSE (mm)')
 for b in bars4: ax4.text(b.get_x() + b.get_width()/2, b.get_height()+0.2, f'{b.get_height():.2f} mm', ha='center', fontweight='bold')
 
 ax5 = plt.subplot(4, 2, 5)
-bars5 = ax5.bar(['Mamba Buta Spasial\n(Tanpa GNN)', 'Ultimate GAT-Mamba-KAN\n(Fase 10)'], [results['MLP']['Acc'], results['ELITE']['Acc']], color=[palette[2], palette[3]], width=0.5, edgecolor='black', lw=2)
+bars5 = ax5.bar(['Mamba Buta Spasial\n(Tanpa GNN)', 'Ultimate GAT-Mamba-KAN\n(Fase 6)'], [results['MLP']['Acc'], results['ELITE']['Acc']], color=[palette[2], palette[3]], width=0.5, edgecolor='black', lw=2)
 ax5.set_ylim(70, 95); ax5.set_title('[5] Pembuktian Efek GAT (Attention) thd Akurasi', fontweight='bold', pad=15)
 for b in bars5: ax5.text(b.get_x() + b.get_width()/2, b.get_height()+1, f'{b.get_height():.1f}%', ha='center', fontweight='bold', fontsize=14)
 
@@ -324,7 +324,7 @@ ax8.set_xlabel('Nilai Kepentingan Absolut (GAT Feature Weight)')
 
 plt.tight_layout(pad=6.0)
 os.makedirs(f'{CLEAN_ROOT}/dashboard_output', exist_ok=True)
-plt.savefig(f'{CLEAN_ROOT}/dashboard_output/Mega_Dashboard_Live_fase8.png', dpi=300)
+plt.savefig(f'{CLEAN_ROOT}/dashboard_output/Mega_Dashboard_Live_Fase8.png', dpi=300)
 print("✅ MEGA DASHBOARD 8 PANEL SELESAI DIGAMBAR!")
 plt.show()
 
@@ -350,10 +350,10 @@ try:
                     break
     if target_idx is None:
         target_idx = np.argmax(true_vals) # Fallback jika tidak ada
-        
+
     I_mm_day_real = true_vals[target_idx]
     I_mm_day_pred = elite_preds[target_idx]
-    
+
     with torch.no_grad():
         X_sample, _, _ = ds_b2_ts[target_idx]
         X_sample = X_sample.unsqueeze(0).to(device)
@@ -372,7 +372,7 @@ try:
     else: # Kelas 0 = Aman (< 20mm)
         status, sop = "🟢 AMAN", "Kondisi terkendali."
 
-    print(f" 🤖 Engine Utama        : Ultimate GAT-Mamba-KAN (Fase 10)")
+    print(f" 🤖 Engine Utama        : Ultimate GAT-Mamba-KAN (Fase 6)")
     print(f" 🌡️ Keyakinan Badai      : {prob_badai_pred:.2f}% (Conformal Softmax)")
     print(f" 🌧️ Prediksi Model       : {I_mm_day_pred:.2f} mm/hari (Aktual: {I_mm_day_real:.2f} mm)")
     print(f" 🌊 Estimasi Debit Air(Q): {Q_debit:.3f} m³/detik")
