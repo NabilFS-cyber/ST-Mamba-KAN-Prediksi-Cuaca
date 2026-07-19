@@ -176,13 +176,13 @@ Setiap fase dijalankan sebagai notebook/script terpisah di Google Colab. Baca fi
 | **BMKG** | Data observasi darat (5 stasiun Jabodetabek) | Juni 2024 - Mei 2026 | Per stasiun |
 
 ### 5 Stasiun Cuaca BMKG
-| Stasiun | Latitude | Longitude |
-| :--- | :---: | :---: |
-| Tanjung Priok | -6.1065 | 106.8810 |
-| Kemayoran | -6.1554 | 106.8428 |
-| Halim Perdanakusuma | -6.2665 | 106.8905 |
-| Citeko (Bogor) | -6.7019 | 106.9330 |
-| Pondok Betung | -6.2611 | 106.7572 |
+| Stasiun | Peran / Lokasi |
+| :--- | :--- |
+| **Tanjung Priok** | Pesisir Utara (Potensi banjir pesisir) |
+| **Kemayoran** | Pusat Kota Jakarta |
+| **Soekarno Hatta** | Jakarta Barat / Bandara |
+| **Klimatologi Jawa Barat** | Representasi iklim wilayah penyangga |
+| **Citeko** | Puncak Bogor (Hulu banjir Ciliwung) |
 
 ---
 

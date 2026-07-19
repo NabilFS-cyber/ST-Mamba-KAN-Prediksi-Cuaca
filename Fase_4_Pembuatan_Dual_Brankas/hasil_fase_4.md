@@ -6,7 +6,7 @@ Dokumen ini merangkum hasil eksekusi **Fase 4**, di mana dataset bersih yang men
 
 ## 📥 1. Input Data
 - **File Input:** `cleaned_merged_all_stations.pkl` (Berasal dari Fase 3)
-- **Isi:** Data gabungan 5 stasiun (Tanjung Priok, Kemayoran, Halim, Citeko, Pondok Betung) berisi 18 fitur cuaca satelit + 1 label curah hujan observasi darat.
+- **Isi:** Data gabungan 5 stasiun (Klimatologi Jabar, Citeko, Kemayoran, Tanjung Priok, Soekarno Hatta) berisi 18 kolom data.
 
 ---
 
@@ -25,12 +25,12 @@ Untuk mencegah kebocoran data masa depan (*temporal data leaking*), pembagian da
 Untuk memaksimalkan kapabilitas AI, data dibagi ke dalam dua skenario pelatihan terpisah:
 
 ### A. Brankas 1 (Satelit Murni / ERA5-Only)
-- **Fitur:** 18 Fitur cuaca satelit (Suhu, Kelembapan, Angin, dll).
+- **Fitur:** 17 Fitur cuaca gabungan (11 Satelit + 6 Darat).
 - **Label Regresi:** Kolom `tp` (Total Precipitation) bawaan dari satelit ERA5.
 - **Tujuan:** Digunakan sebagai data *Pre-training* (Fusi Awal). Satelit mungkin tidak seakurat alat BMKG, tetapi data satelit tidak memiliki jeda (*missing value*) dan mencakup area yang sangat luas. Ini membantu model belajar fisika cuaca secara umum.
 
 ### B. Brankas 2 (Ground-Truth BMKG)
-- **Fitur:** 18 Fitur cuaca satelit (Sama dengan Brankas 1).
+- **Fitur:** 17 Fitur cuaca gabungan (Sama dengan Brankas 1).
 - **Label Regresi:** Kolom `rainfall_bmkg` (Curah Hujan observasi nyata dari takaran hujan stasiun).
 - **Tujuan:** Kunci jawaban absolut. Ini adalah data final yang digunakan untuk menguji validitas model (Evaluasi Regresi HANYA dilakukan pada `Test Set` Brankas 2).
 

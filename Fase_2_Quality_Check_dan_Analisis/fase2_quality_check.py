@@ -121,4 +121,4 @@ if bmkg_stats:
 else:
     print('\n❌ Gagal mengekstrak statistik data BMKG.')
 
-print("\n🎉 PHASE 1 SELESAI TOTAL! Seluruh data satelit dan data stasiun bumi Anda telah disterilkan.")
+print("\n🎉 PHASE 2 SELESAI TOTAL! Seluruh data satelit dan data stasiun bumi Anda telah disterilkan.")
