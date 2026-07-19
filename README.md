@@ -133,9 +133,9 @@ Perancangan_Model_AI/
 │   ├── fase9_mega_dashboard_live.py
 │   └── hasil_fase9_mega_dashboard.md
 │
-├── Fase_10_Ultimate_ST_Mamba_KAN/    # Model Final (Limit-Breaker)
-│   ├── fase10_optuna_gat_mamba_kan.py
-│   └── hasil_fase10_ultimate.md
+├── Fase_6_Ultimate_ST_Mamba_KAN/    # Model Final (Limit-Breaker)
+│   ├── fase6_optuna_gat_mamba_kan.py
+│   └── hasil_fase6_ultimate.md
 │
 ├── MASTER_CHANGELOG_EVOLUTION.md     # Rekam Jejak Evolusi
 └── README.md                         # Dokumen ini
@@ -161,7 +161,7 @@ Perancangan_Model_AI/
 # Fase 7: Penambahan GNN (Haversine spatial)
 # Fase 8: Pelatihan model pembanding (CNN-LSTM, CNN-GRU, Ablasi)
 # Fase 9: Visualisasi dashboard evaluasi
-# Fase 10: Pelatihan model final ST-Mamba-KAN (Limit-Breaker)
+# Fase 6: Pelatihan model final ST-Mamba-KAN (Limit-Breaker)
 ```
 
 Setiap fase dijalankan sebagai notebook/script terpisah di Google Colab. Baca file `hasil_*.md` di setiap folder untuk penjelasan lengkap input, proses, dan output.
