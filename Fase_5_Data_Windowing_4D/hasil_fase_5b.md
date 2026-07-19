@@ -1,65 +1,42 @@
-# 📐 HASIL FASE 5: DATA WINDOWING 4D + SMOTE (VERSI BERSIH & BENAR)
+# 🎞️ HASIL FASE 5B: 4D SPATIO-TEMPORAL WINDOWING & FLATTENED SMOTETOMEK
 
-Dokumen ini merangkum proses pengubahan struktur data tabular 2D menjadi tensor 4D murni yang sangat krusial bagi arsitektur GNN-Mamba, sekaligus menjelaskan penyelesaian cacat algoritma (bug) *Data Leaking* yang sempat terjadi saat SMOTE.
-
----
-
-## 📥 1. Input Data
-- **File Input:** 6 File pickle dari Fase 4 (`b1_train.pkl`, `b2_train.pkl`, dst).
-- **Format Awal:** Tabel data 2D per stasiun.
+Fase 5B adalah tahapan esensial dalam mempersiapkan data masukan (*input*) sebelum dicerna oleh arsitektur *Deep Learning* graf. Pada tahap ini, *Dataframe* 2D diubah menjadi Tensor 4 Dimensi murni agar kecerdasan buatan (GNN + Mamba) mampu memahami hukum fisika spasial dan temporal secara bersamaan.
 
 ---
 
-## 🔧 2. Proses Windowing 4D (Sliding Window)
+## 📐 1. Arsitektur Tensor 4D (Spatio-Temporal Graph)
+Data dibentuk ke dalam struktur matriks berlapis dengan format ukuran `[N_Samples, Window, Stations, Features]`.
+- **N_Samples (Batch):** Jumlah kepingan observasi cuaca.
+- **Window (Waktu):** 14 hari berturut-turut (Temporal).
+- **Stations (Spasial):** 5 titik stasiun pengamatan (Tanjung Priok, Kemayoran, Halim/Soekarno-Hatta, Citeko, Jabar).
+- **Features (Karakteristik):** 17 Fitur Cuaca + 1 Indikator *One-Hot* target stasiun (Total 18 Fitur).
 
-Arsitektur canggih (seperti GNN dan Mamba) tidak bisa membaca data sebaris demi sebaris. Mereka memerlukan informasi "sejarah cuaca masa lalu" sekaligus "peta letak stasiun".
-Oleh karena itu, data diubah strukturnya menjadi Tensor PyTorch 4 Dimensi dengan konfigurasi:
-`[N_samples, 14, 5, 18]`
-
-Penjelasan Dimensi:
-- `N_samples` = Jumlah baris/kejadian hari hujan.
-- `14` = **Time Steps** (Model akan selalu melihat rekam jejak cuaca 14 hari ke belakang).
-- `5` = **Stations** (Kelima stasiun direkatkan menjadi satu matriks spasial yang akan dibaca oleh GAT/GNN).
-- `18` = **Features** (Ke-18 variabel iklim satelit).
-
----
-
-## 🚨 3. Perbaikan Kritis: SMOTE Data Leaking Bug
-
-Pada arsitektur eksperimen sebelumnya, terjadi *Bug* parah: RMSE regresi melonjak di atas 100 mm. 
-**Penyebab:** Fungsi SMOTE (teknik *oversampling* untuk menyeimbangkan kelas minoritas) yang tadinya hanya diterapkan pada kelas klasifikasi (`yc`) ternyata mengacak-acak urutan label regresi (`yr`). Akibatnya, tensor cuaca dipasangkan dengan milimeter hujan yang salah.
-
-**Solusi Resolusi (Fase 5B):** 
-Sebelum dimasukkan ke algoritma SMOTE, label regresi (`yr`) **diikat / di-stack** secara absolut bersamaan dengan matriks fitur 4D (yang dipipihkan sementara). Dengan pengikatan (`column_stack`) ini, ketika SMOTE menggandakan data kelas Siaga/Waspada, label milimeter hujannya ikut tergandakan dengan korelasif fisik yang 100% terjaga.
+**Dimensi Sampel yang Dihasilkan:**
+- **Brankas 1 (Pre-Train):** 15.300 matriks 4D.
+- **Brankas 2 (Fine-Tune):** 3.560 matriks 4D.
 
 ---
 
-## ⚖️ 4. Distribusi Kelas (Hasil SMOTE)
+## ⚖️ 2. Multi-Class Target & SMOTETomek Flatten Trick
+Selain meramal curah hujan persis dalam milimeter (Regresi), kita membagi intensitas bahaya menjadi 3 level kelas (Klasifikasi) yang akan diprediksi:
+- **Kelas 0:** Ringan / Aman (< 20 mm)
+- **Kelas 1:** Sedang / Waspada (20 mm - 50 mm)
+- **Kelas 2:** Lebat & Ekstrem / Siaga (> 50 mm)
 
-Karena kelas badai (Siaga dan Waspada) sangat langka di dunia nyata, SMOTE sangat diwajibkan **hanya pada Training Set**.
-Perbandingan sebelum dan sesudah:
+### 🐛 Bug Fix Krusial (SMOTETomek)
+SMOTE (Synthetic Minority Over-sampling Technique) umumnya hanya dirancang untuk data 2D. Untuk bisa menangani graf cuaca 4D:
+1. **Flatten Trick:** Tensor 4D `[14, 5, 18]` digepengkan sementara menjadi 1 Baris dengan `1260` kolom.
+2. **Target Interpolation:** Nilai regresi curah hujan riil (`yr`) disuntikkan ke dalam matriks yang digepengkan sebelum di-SMOTE. Ini sangat krusial! Jika target curah hujan (*regresi*) tidak ikut diinterpolasi bersilangan dengan kelas, model Regresi akan buta total dan *error* prediksinya (RMSE) akan melonjak tajam >100mm.
+3. Setelah SMOTE memoles data badai (Kelas 2) menjadi setara dengan kelas Aman, matriks dirakit ulang secara matematis kembali ke wujud 4 Dimensi.
 
-- **Sebelum SMOTE:**
-  - Aman: ~70% (Mayoritas absolut)
-  - Siaga: ~20%
-  - Waspada: ~10% (Paling sulit dikenali)
-
-- **Sesudah SMOTE:**
-  - Aman: ~33%
-  - Siaga: ~33%
-  - Waspada: ~33%
-  *(Ketiga kelas kini seimbang, mencegah model AI menjadi malas/bias menebak "Aman" terus-menerus).*
+**Hasil SMOTE (Keseimbangan Baru):**
+- **Brankas 1 Train:** ~5.630 sampel seimbang per kelas.
+- **Brankas 2 Train:** ~2.087 sampel seimbang per kelas.
 
 ---
 
-## 📦 5. Output Tensor Files
+## 🔒 3. Splitting & Standarisasi Emas
+Data dipecah ke dalam proporsi Emas: **70% (Train) - 15% (Validation) - 15% (Test)**.
+Penskalaan menggunakan *StandardScaler* hanya diterapkan ketat pada 17 fitur cuaca, dan dengan sengaja mem- *bypass* / tidak menyentuh kolom logika indikator One-Hot stasiun.
 
-Data 4D yang telah steril dan seimbang diekspor dalam format tensor asli PyTorch (`.pt`). Ini membuat pemuatan data saat *Training* di Fase 6 menjadi seketika.
-
-Lokasi Penyimpanan: `/content/drive/MyDrive/Riset_ERA5_Land/tensors_mamba/`
-(Terdapat 18 file, 3 bagian per brankas per split):
-- Fitur Iklim: `_X_4d.pt` (Tensor `[N, 14, 5, 18]`)
-- Label Regresi: `_yr_4d.pt` (Diubah secara logaritmik `log1p` agar nilai ekstrem tidak merusak gradien)
-- Label Klasifikasi: `_yc_4d.pt`
-
-Seluruh tensor siap dikonsumsi mentah-mentah oleh model **ST-Mamba-KAN**!
+Seluruh output Tensor ini lalu disimpan dalam format PyTorch `.pt` langsung ke Google Drive, siap disuapkan ke dalam *"Mulut"* raksasa **ST-Mamba-GNN (Fase 6)**.
