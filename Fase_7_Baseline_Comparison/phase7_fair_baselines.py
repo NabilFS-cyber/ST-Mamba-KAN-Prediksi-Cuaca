@@ -1,5 +1,5 @@
 # =====================================================================
-# PHASE 8 – PELATIHAN BASELINE (100% APPLE-TO-APPLE FAIR PLAY EDITION)
+# PHASE 7 – PELATIHAN BASELINE (100% APPLE-TO-APPLE FAIR PLAY EDITION)
 # =====================================================================
 # Telah disempurnakan agar 100% ADIL:
 # 1. Menggunakan data yang SAMA PERSIS (Format 4D, SMOTE Bersih).
@@ -28,11 +28,11 @@ CLEAN_ROOT  = '/content/drive/MyDrive/Riset_ERA5_Land/clean'
 os.makedirs(CLEAN_ROOT, exist_ok=True)
 
 N_FEATURES_TOTAL, HIDDEN_DIM, N_MAMBA_LAYERS, BATCH_SIZE = 90, 192, 4, 64 # 5 stasiun * 18 fitur = 90
-EPOCHS_BASE = 300 # [FAIR PLAY] Sama dengan Fase 10 Limit-Breaker
+EPOCHS_BASE = 300 # [FAIR PLAY] Sama dengan Fase 6 Limit-Breaker
 PATIENCE = 50     # [FAIR PLAY] Mencegah baseline hancur karena overfitting
 
 # ---------------------------------------------------------------------
-# 1. FUNGSI DATA (MENGGUNAKAN DATA 4D YANG SAMA PERSIS DENGAN FASE 7B)
+# 1. FUNGSI DATA (MENGGUNAKAN DATA 4D YANG SAMA PERSIS DENGAN FASE 6)
 # ---------------------------------------------------------------------
 def get_dataset(prefix):
     # [PERBAIKAN KRUSIAL]: Wajib menggunakan _4d.pt agar adil (SMOTE bersih)
@@ -98,7 +98,7 @@ class CNN_LSTM_Baseline(nn.Module):
         # [FAIR PLAY] Flatten 4D [B, 14, 5, 18] -> 3D [B, 14, 90]
         B, T, G, F_dim = x_4d.shape
         x_3d = x_4d.reshape(B, T, G * F_dim)
-        
+
         x_conv = F.relu(self.conv(x_3d.transpose(1, 2))).transpose(1, 2)
         out, (hn, cn) = self.lstm(x_conv)
         pool = out[:, -1, :]
@@ -114,7 +114,7 @@ class CNN_GRU_Baseline(nn.Module):
     def forward(self, x_4d):
         B, T, G, F_dim = x_4d.shape
         x_3d = x_4d.reshape(B, T, G * F_dim)
-        
+
         x_conv = F.relu(self.conv(x_3d.transpose(1, 2))).transpose(1, 2)
         out, hn = self.gru(x_conv)
         pool = out[:, -1, :]
@@ -130,7 +130,7 @@ class ST_Mamba_MLP_Ablation(nn.Module):
     def forward(self, x_4d):
         B, T, G, F_dim = x_4d.shape
         x_3d = x_4d.reshape(B, T, G * F_dim)
-        
+
         x = self.proj(x_3d)
         for layer in self.layers: x = layer(x)
         pool = torch.cat([x.mean(dim=1), x.max(dim=1)[0]], dim=1)
