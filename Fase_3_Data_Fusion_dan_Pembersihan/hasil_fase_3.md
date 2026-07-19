@@ -43,7 +43,7 @@ Tabel cuaca ini kini bersih tanpa cela, kaya akan informasi, dan telah tersambun
 - **Nama File Akhir:** `cleaned_merged_all_stations.pkl`
 - **Format:** Pickle (`.pkl`) - Format biner serialisasi Python super cepat.
 - **Isi Data:** Belasan ribu baris (Kombinasi 5 stasiun x 10+ tahun data harian)
-- **Dimensi Fitur:** 18 Fitur (11 Fitur Satelit + 6 Variabel BMKG + 1 Fitur Ekstraksi).
+- **Dimensi Fitur:** 18 Kolom Data (11 Fitur Satelit + 6 Variabel BMKG + 1 Kolom Nama Lokasi Stasiun).
 - **Lokasi Penyimpanan:** `/content/drive/MyDrive/Riset_ERA5_Land/clean/`
 
 File raksasa ini selanjutnya akan dirobek dan dipisah menjadi kompartemen *Training/Testing* pada **Fase 4 (Pembuatan Dual Brankas)**.
