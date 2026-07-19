@@ -1,50 +1,57 @@
-# 🌐 HASIL FASE 1: DOWNLOAD DATASET ERA5-LAND (ECMWF)
+# 🌐 HASIL FASE 1: DOWNLOAD DATASET ERA5-LAND (ECMWF) & AKUISISI BMKG
 
-Fase 1 adalah titik nol dari pengembangan arsitektur ST-Mamba-KAN. Pada tahap ini, kita mengumpulkan data iklim masa lalu beresolusi tinggi langsung dari satelit Eropa untuk memodelkan sistem hidrometeorologi di atas wilayah Jabodetabek.
+Fase 1 adalah titik nol dari pengembangan arsitektur ST-Mamba-KAN. Pada tahap ini, kita mengumpulkan data iklim masa lalu beresolusi tinggi langsung dari satelit Eropa dan menyandingkannya dengan data observasi stasiun darat Indonesia (BMKG).
 
 ---
 
 ## 📥 1. Sumber Data (Copernicus CDS)
 - **Platform:** ECMWF Copernicus Climate Data Store (CDS)
 - **API:** Diunduh secara otomatis menggunakan pustaka Python `cdsapi`
-- **Dataset Utama:** `reanalysis-era5-land` (Dataset reanalisis cuaca permukaan paling komprehensif saat ini)
+- **Dataset Utama:** `reanalysis-era5-land` (Dataset reanalisis cuaca permukaan)
 - **Cakupan Temporal:** 2016 hingga Mei 2026 (Data historis satelit 10+ Tahun)
-- **Resolusi Spasial:** Grid berukuran 0.1° × 0.1° (Area batas bujur lintang Jabodetabek: -6.0° s/d -7.0°S, dan 106.6° s/d 107.0°E)
+- **Resolusi Spasial:** Grid berukuran 0.1° × 0.1° (Area batas bujur lintang Jabodetabek)
 - **Resolusi Temporal:** 4 observasi per hari (Pukul 00:00, 06:00, 12:00, dan 18:00 UTC)
 
 ---
 
-## 🌡️ 2. Katalog Variabel (18 Fitur Cuaca)
+## 🌡️ 2. Katalog Variabel Satelit (11 Fitur Cuaca ERA5)
 
-Model membutuhkan pemahaman fisika atmosfer yang lengkap, oleh karenanya 18 fitur cuaca multidimensi diekstrak secara serentak. Fitur ini terdiri dari suhu, kelembapan, radiasi, hingga evaporasi:
+Model membutuhkan pemahaman fisika atmosfer, oleh karenanya 11 fitur cuaca multidimensi diekstrak secara serentak:
 
-| No | Nama Variabel Asli (API) | Singkatan | Satuan / Deskripsi |
-|:--:|:---|:---:|:---|
-| 1 | `2m_temperature` | **t2m** | Kelvin (K) - Suhu udara 2m di atas daratan |
-| 2 | `2m_dewpoint_temperature` | **d2m** | Kelvin (K) - Suhu titik embun (indikator kelembapan) |
-| 3 | `total_precipitation` | **tp** | Meter (m) - Total presipitasi curah hujan satelit |
-| 4 | `surface_pressure` | **sp** | Pascal (Pa) - Tekanan udara permukaan darat |
-| 5 | `10m_u_component_of_wind` | **u10** | m/s - Komponen kecepatan angin horizontal (Timur/Barat) |
-| 6 | `10m_v_component_of_wind` | **v10** | m/s - Komponen kecepatan angin vertikal (Utara/Selatan) |
-| 7 | `total_cloud_cover` | **tcc** | (0-1) - Kerapatan awan (tutupan awan total) |
-| 8 | `soil_temperature_level_1` | **stl1** | Kelvin (K) - Suhu tanah lapisan teratas |
-| 9 | `volumetric_soil_water_layer_1`| **swvl1** | m³/m³ - Kandungan air dalam tanah |
-| 10| `surface_latent_heat_flux` | **slhf** | J/m² - Fluks panas laten (akumulatif) |
-| 11| `surface_sensible_heat_flux` | **sshf** | J/m² - Fluks panas peka (akumulatif) |
-| 12| `surface_net_solar_radiation` | **ssr** | J/m² - Radiasi matahari netto di permukaan |
-| 13| `surface_net_thermal_radiation`| **str** | J/m² - Radiasi termal netto di permukaan |
-| 14| `evaporation` | **e** | m hujan ekuivalen - Tingkat penguapan |
-| 15| `convective_precipitation` | **cp** | m - Presipitasi konvektif (hujan badai lokal) |
-| 16| `total_column_water_vapour` | **tcwv** | kg/m² - Total uap air dalam kolom atmosfer |
-| 17| `leaf_area_index_high_vegetation`| **lai_hv**| m²/m² - Indeks kerapatan daun pohon tinggi |
-| 18| `leaf_area_index_low_vegetation` | **lai_lv**| m²/m² - Indeks kerapatan daun rumput/rendah |
+| No | Nama Variabel Asli (API) | Keterangan |
+|:--:|:---|:---|
+| 1 | `10m_u_component_of_wind` | Komponen kecepatan angin horizontal (Timur/Barat) |
+| 2 | `10m_v_component_of_wind` | Komponen kecepatan angin vertikal (Utara/Selatan) |
+| 3 | `2m_dewpoint_temperature` | Suhu titik embun (indikator kelembapan) |
+| 4 | `2m_temperature` | Suhu udara 2m di atas permukaan |
+| 5 | `surface_pressure` | Tekanan udara permukaan darat |
+| 6 | `total_precipitation` | Total presipitasi curah hujan satelit |
+| 7 | `surface_net_solar_radiation` | Radiasi matahari netto di permukaan |
+| 8 | `skin_temperature` | Suhu permukaan bumi (kulit bumi) |
+| 9 | `volumetric_soil_water_layer_1` | Kandungan air dalam tanah lapisan 1 |
+| 10| `volumetric_soil_water_layer_2` | Kandungan air dalam tanah lapisan 2 |
+| 11| `evaporation_from_bare_soil` | Penguapan dari tanah kosong |
 
 ---
 
-## 📦 3. Output Data
+## 🌧️ 3. Katalog Variabel Darat (6 Fitur Observasi BMKG)
+
+Sebagai pasangan kalibrasi (Ground Truth), data dari stasiun observasi darat BMKG (Periode Juni 2024 - Mei 2026) digunakan. Terdapat 6 fitur lapangan:
+
+| No | Nama Variabel | Keterangan |
+|:--:|:---|:---|
+| 1 | `TX` | Suhu Maksimum Harian (°C) |
+| 2 | `RH_AVG` | Kelembapan Udara Rata-rata (%) |
+| 3 | `RR` | Curah Hujan Harian (mm) - **(Label Target Utama)** |
+| 4 | `SS` | Lama Penyinaran Matahari (Jam) |
+| 5 | `FF_X` | Kecepatan Angin Maksimum (m/s atau knot) |
+| 6 | `DDD_X` | Arah Angin Maksimum (Derajat) |
+
+---
+
+## 📦 4. Output Data
 
 - **Nama File Akhir:** `ERA5_Jabodetabek_2016_2026.nc` (Berekstensi NetCDF4, standar global klimatologi).
-- **Ukuran File:** ~1.5 GB
-- **Penyimpanan:** File ini disimpan secara permanen di direktori `/content/drive/MyDrive/Riset_ERA5_Land/` agar dapat diakses seumur hidup tanpa harus meminta data ulang ke API Eropa.
+- **Penyimpanan:** File ini disimpan secara permanen di direktori `/content/drive/MyDrive/Riset_ERA5_Land/` agar dapat diakses tanpa harus mengunduh ulang.
 
-File `*.nc` ini nantinya akan diproses lebih lanjut oleh **Fase 2 (Quality Check)** dan **Fase 3 (Fusi Data Stasiun BMKG)** untuk membersihkan data mentah dari satelit.
+File data mentah dari satelit dan stasiun darat ini nantinya akan diproses lebih lanjut oleh **Fase 2 (Quality Check)** dan **Fase 3 (Fusi Data)**.

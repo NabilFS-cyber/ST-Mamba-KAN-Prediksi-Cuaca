@@ -5,7 +5,7 @@ Fase 3 bertugas mengeksekusi operasi peleburan (Fusi) yang menyatukan data satel
 ---
 
 ## 📥 1. Material Input
-- **Dataset Iklim Satelit:** `ERA5_Jabodetabek_2016_2026.nc` (18 Variabel)
+- **Dataset Iklim Satelit:** `ERA5_Jabodetabek_2016_2026.nc` (11 Variabel)
 - **Dataset Takaran Lapangan:** 5 File CSV curah hujan stasiun BMKG.
 
 ---
@@ -43,7 +43,7 @@ Tabel cuaca ini kini bersih tanpa cela, kaya akan informasi, dan telah tersambun
 - **Nama File Akhir:** `cleaned_merged_all_stations.pkl`
 - **Format:** Pickle (`.pkl`) - Format biner serialisasi Python super cepat.
 - **Isi Data:** Belasan ribu baris (Kombinasi 5 stasiun x 10+ tahun data harian)
-- **Dimensi Fitur:** 20 Fitur Cuaca + 1 Label Target Curah Hujan BMKG.
+- **Dimensi Fitur:** 11 Fitur Cuaca Satelit + 6 Variabel Observasi BMKG (termasuk Label Target RR).
 - **Lokasi Penyimpanan:** `/content/drive/MyDrive/Riset_ERA5_Land/clean/`
 
 File raksasa ini selanjutnya akan dirobek dan dipisah menjadi kompartemen *Training/Testing* pada **Fase 4 (Pembuatan Dual Brankas)**.

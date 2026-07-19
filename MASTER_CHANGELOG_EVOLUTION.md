@@ -9,7 +9,7 @@ Dokumen ini adalah rekam jejak evolusi lengkap dari **Fase 1 hingga Fase 10** da
 
 ### 🔹 Fase 1: Akuisisi Data ERA5-Land
 - **Objektif:** Mengunduh data iklim reanalisis satelit dari ECMWF Copernicus CDS.
-- **Dataset:** `reanalysis-era5-land` (18 variabel cuaca, resolusi 0.1°×0.1°, rentang waktu 2016 - Mei 2026).
+- **Dataset:** `reanalysis-era5-land` (11 variabel cuaca ERA5 & 6 variabel BMKG, resolusi 0.1°×0.1°, rentang waktu 2016 - Mei 2026).
 - **Output:** `ERA5_Jabodetabek_2016_2026.nc` (~1.5 GB).
 
 ### 🔹 Fase 2: Quality Check & Analisis Eksplorasi Data
