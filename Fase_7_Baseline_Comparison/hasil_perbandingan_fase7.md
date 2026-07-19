@@ -1,4 +1,4 @@
-# 🏆 HASIL FASE 8: UJI FAIR PLAY BASELINE KLASIK VS ABLASI VS ST-MAMBA-KAN
+# 🏆 HASIL Fase 7: UJI FAIR PLAY BASELINE KLASIK VS ABLASI VS ST-MAMBA-KAN
 
 Dokumen ini merangkum penjelasan arsitektur pengujian, hasil pelatihan masing-masing model *baseline*, dan perbandingan akhirnya melawan **ST-Mamba-KAN (Fase 10 - Limit-Breaker Edition)**. Pengujian ini dirancang agar **100% Adil (Apple-to-Apple)** dengan melatih semua model selama **300 Epoch** dan **Patience 50**.
 
@@ -6,7 +6,7 @@ Dokumen ini merangkum penjelasan arsitektur pengujian, hasil pelatihan masing-ma
 
 ## 📌 1. BEDAH ARSITEKTUR KODE (FAIR PLAY RULES)
 
-Untuk memastikan pengujian ilmiah yang valid dan tidak bias, kode Fase 8 menerapkan aturan ketat berikut:
+Untuk memastikan pengujian ilmiah yang valid dan tidak bias, kode Fase 7 menerapkan aturan ketat berikut:
 
 ### A. Dataset yang Sama Persis (True 4D SMOTE)
 Semua model *baseline* diwajibkan menggunakan file `_X_4d.pt` hasil *Data Windowing 4D* (Fase 5B) yang sudah dibersihkan melalui proses SMOTE. Hal ini memastikan bahwa baseline tidak diuji pada data cacat, melainkan data kelas premium yang sama persis dengan yang dikonsumsi Fase 10.

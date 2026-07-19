@@ -324,7 +324,7 @@ ax8.set_xlabel('Nilai Kepentingan Absolut (GAT Feature Weight)')
 
 plt.tight_layout(pad=6.0)
 os.makedirs(f'{CLEAN_ROOT}/dashboard_output', exist_ok=True)
-plt.savefig(f'{CLEAN_ROOT}/dashboard_output/Mega_Dashboard_Live_Fase9.png', dpi=300)
+plt.savefig(f'{CLEAN_ROOT}/dashboard_output/Mega_Dashboard_Live_fase8.png', dpi=300)
 print("✅ MEGA DASHBOARD 8 PANEL SELESAI DIGAMBAR!")
 plt.show()
 

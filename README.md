@@ -124,14 +124,14 @@ Perancangan_Model_AI/
 │   ├── hasil_fase7_gnn_mamba.md
 │   └── hasil_fase7b_elite.md
 │
-├── Fase_8_Baseline_Comparison/       # Uji Fair Play Baseline
+├── Fase_7_Baseline_Comparison/       # Uji Fair Play Baseline
 │   ├── phase8_fair_baselines.py
-│   └── hasil_perbandingan_fase8.md
+│   └── hasil_perbandingan_fase7.md
 │
-├── Fase_9_Evaluasi_Mega_Dashboard/   # Dashboard 8-Panel + BPBD
-│   ├── fase9_mega_dashboard.py
-│   ├── fase9_mega_dashboard_live.py
-│   └── hasil_fase9_mega_dashboard.md
+├── Fase_8_Evaluasi_Mega_Dashboard/   # Dashboard 8-Panel + BPBD
+│   ├── fase8_mega_dashboard.py
+│   ├── fase8_mega_dashboard_live.py
+│   └── hasil_fase8_mega_dashboard.md
 │
 ├── Fase_6_Ultimate_ST_Mamba_KAN/    # Model Final (Limit-Breaker)
 │   ├── fase6_optuna_gat_mamba_kan.py
@@ -159,8 +159,8 @@ Perancangan_Model_AI/
 # Fase 5: Konversi ke tensor 4D + SMOTE
 # Fase 6: Pelatihan ST-Mamba (baseline internal)
 # Fase 7: Penambahan GNN (Haversine spatial)
-# Fase 8: Pelatihan model pembanding (CNN-LSTM, CNN-GRU, Ablasi)
-# Fase 9: Visualisasi dashboard evaluasi
+# Fase 7: Pelatihan model pembanding (CNN-LSTM, CNN-GRU, Ablasi)
+# Fase 8: Visualisasi dashboard evaluasi
 # Fase 6: Pelatihan model final ST-Mamba-KAN (Limit-Breaker)
 ```
 

@@ -128,8 +128,8 @@ ax8.set_title('[8] Explainable AI: Variabel Cuaca Paling Dominan (XAI)', fontwei
 ax8.set_xlabel('Nilai Kepentingan Absolut (GNN Feature Weight)')
 
 plt.tight_layout(pad=6.0)
-os.makedirs('/content/Fase_9_Evaluasi_Mega_Dashboard', exist_ok=True)
-plt.savefig('/content/Fase_9_Evaluasi_Mega_Dashboard/Mega_Dashboard_Fase9.png', dpi=300)
+os.makedirs('/content/Fase_8_Evaluasi_Mega_Dashboard', exist_ok=True)
+plt.savefig('/content/Fase_8_Evaluasi_Mega_Dashboard/Mega_Dashboard_fase8.png', dpi=300)
 print("✅ MEGA DASHBOARD 8 PANEL SELESAI DIGAMBAR!")
 plt.show()
 

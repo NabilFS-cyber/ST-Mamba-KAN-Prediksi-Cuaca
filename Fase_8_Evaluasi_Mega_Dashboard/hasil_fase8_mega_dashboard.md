@@ -1,6 +1,6 @@
-# 🏆 HASIL FASE 9: MEGA DASHBOARD EVALUASI (LIVE INFERENCE - LIMIT-BREAKER)
+# 🏆 HASIL Fase 8: MEGA DASHBOARD EVALUASI (LIVE INFERENCE - LIMIT-BREAKER)
 
-Dokumen ini merangkum hasil eksekusi **Fase 9: Mega Dashboard Evaluasi**, yang merupakan puncak pembuktian (*Gong Penutup*) dari riset PKM ini. Pada fase ini, kita melakukan **Live Inference** murni. Seluruh bobot PyTorch (Baseline vs ST-Mamba-KAN Limit-Breaker) dimuat secara bersamaan dan diuji menggunakan *Unseen Test Set* gabungan.
+Dokumen ini merangkum hasil eksekusi **Fase 8: Mega Dashboard Evaluasi**, yang merupakan puncak pembuktian (*Gong Penutup*) dari riset PKM ini. Pada fase ini, kita melakukan **Live Inference** murni. Seluruh bobot PyTorch (Baseline vs ST-Mamba-KAN Limit-Breaker) dimuat secara bersamaan dan diuji menggunakan *Unseen Test Set* gabungan.
 
 ---
 
@@ -21,7 +21,7 @@ Saat diadu secara *live* pada *Test Set* Gabungan (Fusi ERA5 + BMKG), berikut ad
 
 ## 🎨 2. ANALISIS 8-PANEL MEGA DASHBOARD
 
-Berkat pembaruan parameter model pada skrip `fase9_mega_dashboard_live.py`, dashboard dapat memplot metrik aktual berikut:
+Berkat pembaruan parameter model pada skrip `fase8_mega_dashboard_live.py`, dashboard dapat memplot metrik aktual berikut:
 
 1. **[1] Stabilitas Konvergensi:** CNN-LSTM (Ep 57) dan ST-Mamba-MLP (Ep 57) mengalami *Early Stopping* dini karena keterbatasan arsitektur spasial statis. ST-Mamba-KAN mampu melatih bobot secara stabil berkat *Cosine Warm Restarts*.
 2. **[2] Recall Deteksi Badai (Siaga):** ST-Mamba-KAN mencetak angka Recall tertinggi (91.00%). Keunggulan ini krusial untuk mencegah korban jiwa akibat banjir bandang dadakan.
