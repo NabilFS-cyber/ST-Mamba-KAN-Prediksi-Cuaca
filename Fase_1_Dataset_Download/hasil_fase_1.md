@@ -8,7 +8,7 @@ Fase 1 adalah titik nol dari pengembangan arsitektur ST-Mamba-KAN. Pada tahap in
 - **Platform:** ECMWF Copernicus Climate Data Store (CDS)
 - **API:** Diunduh secara otomatis menggunakan pustaka Python `cdsapi`
 - **Dataset Utama:** `reanalysis-era5-land` (Dataset reanalisis cuaca permukaan paling komprehensif saat ini)
-- **Cakupan Temporal:** 1 Januari 2005 hingga 31 Desember 2024 (Data historis 20 Tahun Penuh)
+- **Cakupan Temporal:** 2016 hingga Mei 2026 (Data historis satelit 10+ Tahun)
 - **Resolusi Spasial:** Grid berukuran 0.1° × 0.1° (Area batas bujur lintang Jabodetabek: -6.0° s/d -7.0°S, dan 106.6° s/d 107.0°E)
 - **Resolusi Temporal:** 4 observasi per hari (Pukul 00:00, 06:00, 12:00, dan 18:00 UTC)
 
@@ -43,7 +43,7 @@ Model membutuhkan pemahaman fisika atmosfer yang lengkap, oleh karenanya 18 fitu
 
 ## 📦 3. Output Data
 
-- **Nama File Akhir:** `ERA5_Jabodetabek_2005_2024.nc` (Berekstensi NetCDF4, standar global klimatologi).
+- **Nama File Akhir:** `ERA5_Jabodetabek_2016_2026.nc` (Berekstensi NetCDF4, standar global klimatologi).
 - **Ukuran File:** ~1.5 GB
 - **Penyimpanan:** File ini disimpan secara permanen di direktori `/content/drive/MyDrive/Riset_ERA5_Land/` agar dapat diakses seumur hidup tanpa harus meminta data ulang ke API Eropa.
 

@@ -14,9 +14,9 @@ Dokumen ini merangkum hasil eksekusi **Fase 4**, di mana dataset bersih yang men
 
 Untuk mencegah kebocoran data masa depan (*temporal data leaking*), pembagian data latih (Train), validasi (Val), dan uji (Test) **TIDAK** dilakukan secara acak (*random shuffle*). Pembagian dilakukan secara berurutan berdasarkan waktu:
 
-- **Training Set (70%):** Periode 2005 - 2018 (Digunakan untuk melatih model)
-- **Validation Set (15%):** Periode 2019 - 2021 (Digunakan untuk kalibrasi *hyperparameter* dan *Early Stopping*)
-- **Test Set (15%):** Periode 2022 - 2024 (Hanya dibuka sekali di akhir untuk ujian nyata)
+- **Training Set (70%):** Data awal periode waktu (Digunakan untuk melatih model)
+- **Validation Set (15%):** Data pertengahan periode waktu (Digunakan untuk kalibrasi *hyperparameter* dan *Early Stopping*)
+- **Test Set (15%):** Data paling akhir (Hanya dibuka sekali di akhir untuk ujian nyata)
 
 ---
 

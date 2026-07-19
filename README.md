@@ -172,8 +172,8 @@ Setiap fase dijalankan sebagai notebook/script terpisah di Google Colab. Baca fi
 
 | Sumber | Deskripsi | Periode | Resolusi |
 | :--- | :--- | :--- | :--- |
-| **ERA5-Land** (ECMWF) | Data reanalisis satelit (18 variabel cuaca) | 2005-2024 | 0.1° × 0.1° |
-| **BMKG** | Data observasi darat (5 stasiun Jabodetabek) | 2005-2024 | Per stasiun |
+| **ERA5-Land** (ECMWF) | Data reanalisis satelit (18 variabel cuaca) | 2016 - Mei 2026 | 0.1° x 0.1° |
+| **BMKG** | Data observasi darat (5 stasiun Jabodetabek) | Juni 2024 - Mei 2026 | Per stasiun |
 
 ### 5 Stasiun Cuaca BMKG
 | Stasiun | Latitude | Longitude |

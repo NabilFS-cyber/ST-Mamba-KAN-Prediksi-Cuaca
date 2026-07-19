@@ -5,7 +5,7 @@ Fase 2 bertujuan untuk memeriksa integritas data mentah yang telah dikumpulkan. 
 ---
 
 ## 📥 1. Dataset yang Dianalisis
-- **Data Satelit (ERA5):** `ERA5_Jabodetabek_2005_2024.nc` (dihasilkan dari Fase 1).
+- **Data Satelit (ERA5):** `ERA5_Jabodetabek_2016_2026.nc` (dihasilkan dari Fase 1).
 - **Data Darat (BMKG):** 5 file `.csv` stasiun observasi resmi BMKG di Jabodetabek yang diunduh manual dari portal *dataonline.bmkg.go.id*.
 
 ### 📍 Koordinat 5 Stasiun BMKG Kritis:
@@ -23,7 +23,7 @@ Fase 2 bertujuan untuk memeriksa integritas data mentah yang telah dikumpulkan. 
 
 ### A. ERA5-Land (Data Grid Satelit)
 - **Tingkat Missing Values:** **0% (Nol)**.
-- **Karakteristik:** Model numerik satelit (reanalisis) selalu menghasilkan matriks angka yang berkesinambungan penuh tanpa bolong. Total ada sekitar 29.200 *timestep* (4 observasi/hari × 365 hari × 20 tahun).
+- **Karakteristik:** Model numerik satelit (reanalisis) selalu menghasilkan matriks angka yang berkesinambungan penuh tanpa bolong. Total belasan ribu *timestep* (4 observasi/hari × 365 hari × 10+ tahun).
 
 ### B. BMKG (Data Sensor Observasi Tanah)
 - **Tingkat Missing Values:** **Bervariasi (5% hingga 20%)**.
