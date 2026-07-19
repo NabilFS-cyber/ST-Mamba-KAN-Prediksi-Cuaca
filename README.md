@@ -12,7 +12,7 @@ Model utama kami (Fase 6) memecahkan batas kemampuan model tradisional (seperti 
 2. **Mamba Block (State-Space Model):** Pengganti mutlak dari LSTM. Sangat gesit dalam merekam histori cuaca 14 hari tanpa penyakit kelupaan (*Gradient Vanishing*).
 3. **KAN (Kolmogorov-Arnold Network):** Menggantikan struktur Linier tradisional, otak ajaib ini menebak rumus matematika non-linear paling ruwet dari iklim khatulistiwa.
 
-**Performa Puncak (Diuji pada Unseen Data 2022-2024):**
+**Performa Puncak (Diuji pada Unseen Data 2024-2026):**
 - **Akurasi Deteksi:** `88.02%`
 - **Tingkat Error Hujan (RMSE):** `17.07 mm`
 - **Keberhasilan Mengingat Badai Ekstrem (Recall):** `91%` (Menyelamatkan ribuan nyawa tepat waktu!)
@@ -25,13 +25,13 @@ Repositori ini bukan sekadar kumpulan *script*, melainkan sebuah rantai perakita
 
 ### 📥 TAHAP 1: DATA ENGINEERING & FUSION
 *   **[Fase 1: Dataset Download](Fase_1_Dataset_Download/hasil_fase_1.md)** 📡
-    Mengais miliaran sel data iklim masa lalu (Tahun 2000 - 2024) langsung dari Satelit ERA5-Land (Eropa) dan Markas BMKG Indonesia.
+    Mengais miliaran sel data iklim masa lalu (Tahun 2016 - 2026) yang terdiri dari **11 Fitur Satelit ERA5-Land** (Eropa) dan **6 Fitur Stasiun Bumi BMKG** Indonesia.
 *   **[Fase 2: Dataset Analysis & Quality Check](Fase_2_Quality_Check_dan_Analisis/hasil_fase_2.md)** 🔍
     Ruang audit yang membongkar cacat bawaan data, mendeteksi ukuran yang bisa meledakkan memori, serta hilangnya ratusan data di tahun awal (*Missing Values*).
 *   **[Fase 3: Data Fusion & Cleaning Hybrid](Fase_3_Data_Fusion_dan_Pembersihan/hasil_fase_3.md)** 🧹
     Operasi besar menyatukan dua semesta data berbeda menggunakan **Jarak Haversine KD-Tree**. Membersihkan nilai kotor (NaN) dengan algoritma interpolasi (*ffill/bfill*).
 *   **[Fase 4: Pembuatan Dual Brankas & Titanium Shield](Fase_4_Pembuatan_Dual_Brankas/hasil_fase_4.md)** 🔒
-    Menyelaraskan zona waktu (GMT ke WIB) agar badai satelit selaras dengan waktu riil Jakarta. Memisahkan data raksasa menjadi *Brankas 1 (Pre-Train)* dan *Brankas 2 (Fine-Tune)* agar terhindar dari *Data Leakage*.
+    Menyelaraskan zona waktu (GMT ke WIB) agar badai satelit selaras dengan waktu riil Jakarta. Memisahkan data 17 fitur hibrida tersebut menjadi *Brankas 1* (2016 - Mei 2024) dan *Brankas 2* (Juni 2024 - Mei 2026) agar terhindar dari *Data Leakage*.
 
 ### 🧬 TAHAP 2: SPATIO-TEMPORAL GEOMETRY
 *   **[Fase 5: 4D Spatio-Temporal Windowing](Fase_5_Data_Windowing_4D/hasil_fase_5b.md)** 🎞️
@@ -45,7 +45,7 @@ Repositori ini bukan sekadar kumpulan *script*, melainkan sebuah rantai perakita
 
 ### 🚨 TAHAP 4: DEPLOYMENT & SOSIAL
 *   **[Fase 8: Evaluasi Mega Dashboard & Simulasi BPBD](Fase_8_Evaluasi_Mega_Dashboard/hasil_fase8_mega_dashboard.md)** 📊
-    Pusat Komando Akhir. Seluruh mesin (Fase 6 & 7) dihidupkan (*Live Inference*). Mencetak *8-Panel Mega Dashboard* mahakarya visual. Secara ajaib, sistem mendemonstrasikan keunggulannya menyalakan Alarm Darurat *"SIAGA (EKSTREM)"* layaknya konsol milik BPBD DKI Jakarta/Jabar.
+    Pusat Komando Akhir. Seluruh mesin (Fase 6 & 7) dihidupkan (*Live Inference*). Mencetak *8-Panel Mega Dashboard* mahakarya visual. Secara ajaib, sistem mendemonstrasikan keunggulannya menyalakan Alarm Darurat *"SIAGA (EKSTREM)"* layaknya konsol lapangan milik BPBD DKI Jakarta/Jabar.
 
 ---
 

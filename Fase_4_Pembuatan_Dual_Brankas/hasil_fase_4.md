@@ -21,12 +21,12 @@ Skrip memperbaiki ini dengan menggeser (*Shift*) tanggal dan jam satelit menjadi
 Untuk mencegah RAM Google Colab meledak karena mengkalkulasi jutaan titik secara bersamaan, skrip menggunakan metode *Bilinear Interpolation* yang mengekstrak nilai piksel cuaca satelit langsung secara terfokus pada titik koordinat persis setiap stasiun, stasiun demi stasiun.
 
 ### 3. Penetapan "Threshold Sakral" (Badai Ekstrem > 100 mm)
-Data dipindai untuk mencari target anomali tertinggi: Curah Hujan Ekstrem (di atas 100 mm/hari). Laporan Fase 4 menemukan ketimpangan kelas badai yang sangat brutal (Rasio 1 : 172). Artinya, badai mematikan ini sangat langka (minoritas super), yang mengharuskan algoritma *SMOTETomek* untuk turun tangan nanti di Fase 5.
+Data dipindai untuk mencari target anomali tertinggi: Curah Hujan Ekstrem (di atas 100 mm/hari). Laporan Fase 4 menemukan ketimpangan kelas badai yang sangat brutal. Artinya, badai mematikan ini sangat langka (minoritas super), yang mengharuskan algoritma *SMOTETomek* untuk turun tangan nanti di Fase 5.
 
 ### 4. Pembentukan "Titanium Shield" (Split Data Aman)
-Tabel raksasa dipecah menjadi dua rentang waktu absolut (Dual Brankas) berstruktur pelindung 21 Kolom (17 Cuaca Satelit + 4 Indikator Ekstrem).
-- **Brankas 1 (Pre-Train):** Rentang Tahun 2000 - 2021 (Bahan ajar utama masa lalu).
-- **Brankas 2 (Fine-Tune / Test):** Rentang Tahun 2022 - 2024 (Data era modern untuk ujian dan adaptasi).
+Tabel raksasa dipecah menjadi dua rentang waktu absolut (Dual Brankas) berstruktur pelindung dengan presisi (11 fitur cuaca satelit ERA5-Land + 6 indikator stasiun BMKG = Total 17 fitur persilangan).
+- **Brankas 1 (Pre-Train):** Rentang **Tahun 2016 hingga Mei 2024** (Bahan ajar utama satelit murni sebelum sensor BMKG tersedia).
+- **Brankas 2 (Fine-Tune / Test):** Rentang **Juni 2024 hingga Mei 2026** (Data fusi hibrida satelit dan sensor BMKG aktual untuk kalibrasi mutlak).
 
 ---
 
@@ -35,4 +35,4 @@ Bahan ajar telah diamankan ke dalam dua *Vault* yang terpisah sempurna:
 1. `brankas1_pretrain.parquet`
 2. `brankas2_finetune.parquet`
 
-Kedua *brankas* 2 Dimensi ini **dikirim menuju Fase 5 (4D Spatio-Temporal Windowing)**. Di sana, data datar ini akan dilipat secara matematis ke dalam ruang 4 Dimensi, dan kelemahannya (kelangkaan data badai 1:172) akan disembuhkan oleh algoritma SMOTE.
+Kedua *brankas* 2 Dimensi ini **dikirim menuju Fase 5 (4D Spatio-Temporal Windowing)**. Di sana, data datar ini akan dilipat secara matematis ke dalam ruang 4 Dimensi, dan kelemahannya (kelangkaan data badai) akan disembuhkan oleh algoritma SMOTE.
