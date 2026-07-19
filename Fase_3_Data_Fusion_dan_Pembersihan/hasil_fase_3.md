@@ -1,49 +1,57 @@
-# 🔗 HASIL FASE 3: DATA FUSION & PEMBERSIHAN (PRE-PROCESSING)
+# 🔗 HASIL FASE 3: CLEANING, OUTLIER DETECTION & HYBRID FUSION
 
-Fase 3 bertugas mengeksekusi operasi peleburan (Fusi) yang menyatukan data satelit ruang angkasa (ERA5-Land) dengan data lapangan nyata (BMKG) menjadi satu matriks berkesinambungan. Fase ini juga bertanggung jawab membersihkan segala bentuk cacat (imputasi *missing values*) yang ditemukan pada Fase 2.
-
----
-
-## 📥 1. Material Input
-- **Dataset Iklim Satelit:** Kumpulan file bulanan `dataset_era5_land_jabodetabek_YYYY_MM.nc` (11 Variabel)
-- **Dataset Takaran Lapangan:** 5 File CSV curah hujan stasiun BMKG.
+Fase 3 bertugas mengeksekusi operasi peleburan hibrida (Fusi) yang menyatukan data satelit ruang angkasa (ERA5-Land) dengan data lapangan nyata (BMKG) menjadi satu matriks berkesinambungan. Fase ini juga bertanggung jawab atas pembersihan data lanjutan, imputasi nilai kosong, dan pendeteksian data pencilan (*outliers*).
 
 ---
 
-## ⚙️ 2. Proses Rekayasa Data (Data Engineering)
+## 📥 1. Material Input & Struktur Folder
+- **Dataset Iklim Satelit:** 125 berkas NetCDF bulanan (`dataset_era5_land_*.nc`).
+- **Dataset Takaran Lapangan:** 5 File Excel (.xlsx) stasiun BMKG.
+- Semua luaran bersih akan disimpan ke direktori `clean/` di dalam Google Drive.
 
-### A. Ekstraksi Spasial dengan *Nearest-Neighbor*
-Karena satelit ERA5 memetakan dunia dalam bentuk *grid* kotak-kotak piksel 0.1 derajat, kita harus "menembak" jatuh tepat di atas letak geografis ke-5 stasiun BMKG. 
-Kode ini menggunakan fungsi `.sel(method='nearest')` dari pustaka `xarray` untuk mencuplik titik koordinat satelit yang paling dekat dengan titik koordinat *latitude/longitude* stasiun BMKG (seperti stasiun Citeko di Puncak).
-
-### B. Agregasi Temporal 24 Jam
-Satelit merekam cuaca bumi secara per jam (24 kali sehari). Namun BMKG merekap hujan harian satu kali per 24 jam. Agar bisa disatukan, data satelit per jam ini harus diringkas (diagregasi) menjadi level Harian:
-1. **Variabel Akumulatif (Dijumlahkan `sum`):** Fitur seperti presipitasi total, curah hujan konvektif, laju evaporasi, dan fluks radiasi akan ditambahkan sepanjang hari untuk mendapatkan total harian.
-2. **Variabel Instan (Dirata-rata `mean`):** Fitur seperti suhu, tekanan udara, kecepatan angin, kelembapan tanah, dan tutupan awan akan dirata-ratakan selama 24 jam.
-
-### C. Fusi (Merge Data)
-Setelah ERA5 dan BMKG sama-sama memiliki format per hari (Tanggal), tabel mereka digabung (*Inner Join*) berdasarkan kolom `date`. Hasilnya, setiap baris tanggal kini memiliki data suhu, angin, dsb dari satelit **DAN** data jumlah takaran hujan asli dari kaleng BMKG.
-
-### D. Imputasi Celah Kosong (*Missing Value Healing*)
-Menindaklanjuti temuan Fase 2 bahwa BMKG bolong hingga 20%, metode imputasi bertingkat diaplikasikan secara berurutan:
-1. **Forward Fill (`ffill`):** Jika hari Selasa kosong, salin data hari Senin. (Karena cuaca hari ini sangat berkaitan dengan cuaca kemarin).
-2. **Backward Fill (`bfill`):** Jika `ffill` gagal, mundur salin dari hari besoknya.
-3. **Median Fill:** Jika hujan hilang berhari-hari berturut-turut, diisi dengan nilai tengah historis bulan tersebut.
-**Hasil:** Angka 0% *Missing Value* mutlak berhasil dicapai!
-
-### E. Ekstraksi Fitur Tambahan (Feature Engineering)
-Data ERA5 hanya memberikan suhu (*temperature*) dan titik embun (*dewpoint*). Padahal badai sangat sensitif terhadap kelembapan nisbi (RH - *Relative Humidity*). Kode ini menciptakan fitur kelembapan udara menggunakan rumus aproksimasi **Hukum Magnus**. Selain itu, fitur kecepatan angin gabungan (*Wind Speed*) diturunkan menggunakan hukum Pythagoras dari vektor komponen angin u (Timur/Barat) dan v (Utara/Selatan).
+**Daftar Koordinat Stasiun BMKG Asli:**
+- Stasiun Meteorologi Soekarno Hatta
+- Stasiun Meteorologi Maritim Tanjung Priok
+- Stasiun Meteorologi Kemayoran
+- Stasiun Meteorologi Citeko
+- Stasiun Klimatologi Jawa Barat
 
 ---
 
-## 📦 3. Output Dataset Emas
+## ⚙️ 2. Proses Rekayasa Data Hibrida (Data Engineering)
 
-Tabel cuaca ini kini bersih tanpa cela, kaya akan informasi, dan telah tersambung langsung dengan kebenaran lapangan (*Ground-Truth*).
+### A. Penjahitan Temporal & Agregasi Satelit
+125 file bulanan NetCDF dirakit secara berkesinambungan menggunakan dimensi waktu (*temporal concatenation*). File master satelit ini kemudian dijaga keberlanjutannya menggunakan metode imputasi *Forward-Fill* dan diekspor sementara sebagai `era5_clean.nc`.
 
-- **Nama File Akhir:** `cleaned_merged_all_stations.pkl`
-- **Format:** Pickle (`.pkl`) - Format biner serialisasi Python super cepat.
-- **Isi Data:** Belasan ribu baris (Kombinasi 5 stasiun x 10+ tahun data harian)
-- **Dimensi Fitur:** 18 Kolom Data (11 Fitur Satelit + 6 Variabel BMKG + 1 Kolom Nama Lokasi Stasiun).
-- **Lokasi Penyimpanan:** `/content/drive/MyDrive/Riset_ERA5_Land/clean/`
+### B. Ekstraksi Spasial dengan *Nearest-Neighbor*
+Karena satelit ERA5 memetakan dunia dalam bentuk *grid*, kita "menembak" jatuh tepat di atas letak geografis 5 stasiun BMKG menggunakan `.sel(method="nearest")` dari pustaka `xarray`.
 
-File raksasa ini selanjutnya akan dirobek dan dipisah menjadi kompartemen *Training/Testing* pada **Fase 4 (Pembuatan Dual Brankas)**.
+### C. Agregasi Temporal (Per Jam ke Harian)
+Satelit merekam cuaca bumi secara per jam. Agar bisa disatukan dengan BMKG yang merekap per hari, data satelit diringkas:
+1. **Variabel Akumulatif (Dijumlahkan `sum`):** Presipitasi total (`tp`), evaporasi (`evabs`), fluks radiasi (`ssrd`).
+2. **Variabel Instan (Dirata-rata `mean`):** Suhu udara, suhu titik embun, dll.
+
+### D. Penjinakan & Interpolasi BMKG
+- Sinkronisasi format penanggalan (*Datetime*) dari kolom DATE/TANGGAL/TIME.
+- Penanganan eror fatal 8888 dan 9999 diubah menjadi `NaN`.
+- Metode imputasi interpolasi linier (*Linear Interpolation*) digunakan untuk menambal nilai-nilai kosong dengan sangat aman secara kronologis.
+
+### E. Pendeteksian Outlier Curah Hujan (RR)
+Data curah hujan ekstrem merupakan tantangan utama. Menggunakan rentang Interkuartil (IQR - *Interquartile Range*), pencilan dideteksi dan dicatat dalam laporan terpisah `bmkg_outliers.csv` untuk memastikan fenomena badai benar-benar nyata, bukan sekadar eror sensor lapangan.
+
+### F. Perkawinan Data (Fusi Hibrida)
+Data satelit dan data BMKG akhirnya dijahit sejajar (*Inner Join*) menggunakan kolom `TANGGAL_FUSI`.
+
+---
+
+## 📦 3. Output Master Matriks Emas
+
+Penggabungan seluruh 5 stasiun menghasilkan matriks raksasa yang kaya akan informasi.
+
+- **Nama File Akhir:** `dataset_hybrid_clean_master.csv`
+- **Format:** Comma-Separated Values (`.csv`)
+- **Dimensi Matriks:** **3625 baris** x **18 kolom**
+- **Isi Kolom:** 11 Fitur Satelit + 6 Variabel BMKG + 1 Kolom Nama Lokasi Stasiun.
+- **Lokasi Penyimpanan:** `/content/drive/MyDrive/Riset_ERA5_Land/clean/dataset_hybrid_clean_master.csv`
+
+File matriks emas berformat `.csv` ini akan dipotong menjadi *Training/Testing Set* pada **Fase 4 (Pembuatan Dual Brankas)**.

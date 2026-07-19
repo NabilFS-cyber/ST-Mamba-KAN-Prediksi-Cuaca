@@ -5,7 +5,7 @@ Dokumen ini merangkum hasil eksekusi **Fase 4**, di mana dataset bersih yang men
 ---
 
 ## 📥 1. Input Data
-- **File Input:** `cleaned_merged_all_stations.pkl` (Berasal dari Fase 3)
+- **File Input:** `dataset_hybrid_clean_master.csv` (Berasal dari Fase 3)
 - **Isi:** Data gabungan 5 stasiun (Klimatologi Jabar, Citeko, Kemayoran, Tanjung Priok, Soekarno Hatta) berisi 18 kolom data.
 
 ---
