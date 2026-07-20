@@ -1,9 +1,10 @@
 # =====================================================================
-# PHASE 9 – SIMULASI PREDIKSI REAL-TIME BERGERAK (LIVE MONITORING)
+# PHASE 9 – SIMULASI PREDIKSI REAL-TIME BERGERAK (LIVE LEADERBOARD)
 # =====================================================================
-# Script ini menjalankan simulasi perbandingan pergerakan curah hujan
-# secara realtime/bergerak antara data aktual BMKG, model utama ST-Mamba-KAN,
-# dan model-model baseline (CNN-LSTM, CNN-GRU, ST-Mamba-MLP) pada data uji.
+# Script ini menjalankan simulasi perbandingan dinamis curah hujan
+# menggunakan 2-Panel Dashboard: Time-Series Bergerak (Kiri) dan 
+# Live Leaderboard Akurasi RMSE (Kanan). Pemenang ditunjukkan secara real-time!
+# 100% Data Otentik dari hasil pelatihan model asli Anda.
 # =====================================================================
 import os, time, math, warnings
 import torch
@@ -32,7 +33,7 @@ CLEAN_ROOT  = '/content/drive/MyDrive/Riset_ERA5_Land/clean'
 HIDDEN_DIM, N_MAMBA_LAYERS = 192, 4
 
 # ============================================================
-# 2. ARSITEKTUR MODEL (Untuk Load Weights)
+# 2. ARSITEKTUR MODEL
 # ============================================================
 class CNN_LSTM_Baseline(nn.Module):
     def __init__(self, in_features=90, hidden=64):
@@ -125,7 +126,7 @@ class KANLinear(nn.Module):
         return base_out + torch.einsum('bin,oin->bo', bases, self.spline_weight)
 
 class Ultimate_GAT_Mamba_KAN(nn.Module):
-    def __init__(self, hidden_dim, mamba_layers, is_classifier=False):
+    def __init__(self, hidden_dim, mamba_layers):
         super().__init__()
         self.proj = nn.Linear(18, hidden_dim)
         self.gat = nn.MultiheadAttention(embed_dim=hidden_dim, num_heads=4, batch_first=True)
@@ -147,24 +148,24 @@ class Ultimate_GAT_Mamba_KAN(nn.Module):
         return out.squeeze(-1)
 
 # ============================================================
-# 3. MEMUAT DATA & MODEL
+# 3. MEMUAT DATA & MODEL ASLI
 # ============================================================
-print("\n🔄 Memuat Data Uji BMKG...")
+print("\n🔄 Memuat Data Uji BMKG Aktual...")
 X_test = torch.load(f'{TENSOR_ROOT}/b2_test_X_4d.pt', map_location=device, weights_only=False)
 yr_test = torch.load(f'{TENSOR_ROOT}/b2_test_yr_4d.pt', map_location=device, weights_only=False).clamp(min=0).cpu().numpy()
 
 # Memuat Model
 models = {
-    'LSTM': CNN_LSTM_Baseline().to(device),
-    'GRU': CNN_GRU_Baseline().to(device),
-    'MLP': ST_Mamba_MLP_Ablation().to(device),
+    'CNN-LSTM': CNN_LSTM_Baseline().to(device),
+    'CNN-GRU': CNN_GRU_Baseline().to(device),
+    'ST-Mamba-MLP': ST_Mamba_MLP_Ablation().to(device),
     'ST-Mamba-KAN': Ultimate_GAT_Mamba_KAN(hidden_dim=384, mamba_layers=4).to(device)
 }
 
 file_map = {
-    'LSTM': 'baseline_CNN_LSTM.pt', 
-    'GRU': 'baseline_CNN_GRU.pt', 
-    'MLP': 'baseline_ST_Mamba_MLP.pt'
+    'CNN-LSTM': 'baseline_CNN_LSTM.pt', 
+    'CNN-GRU': 'baseline_CNN_GRU.pt', 
+    'ST-Mamba-MLP': 'baseline_ST_Mamba_MLP.pt'
 }
 
 for name, filename in file_map.items():
@@ -181,7 +182,7 @@ if os.path.exists(ckpt_reg_path):
     for n, p in models['ST-Mamba-KAN'].named_parameters(): 
         p.data = ckpt['ema'][n]
     models['ST-Mamba-KAN'].eval()
-    print(" ✅ Model ST-Mamba-KAN Regressor siap (dengan bobot EMA)!")
+    print(" ✅ Model Utama ST-Mamba-KAN Regressor siap (EMA weights)!")
 
 # ============================================================
 # 4. PRE-INFERENCE UNTUK ANIMASI YANG HALUS
@@ -190,17 +191,14 @@ print("\n⚙️ Menjalankan pra-inferensi untuk seluruh dataset...")
 preds = {name: [] for name in models.keys()}
 
 with torch.no_grad():
-    # Jalankan batch by batch agar hemat RAM
     dataset = TensorDataset(X_test)
     loader = DataLoader(dataset, batch_size=64, shuffle=False)
     for (x_batch,) in loader:
         x_batch = x_batch.to(device)
         for name, model in models.items():
             out = model(x_batch)
-            # Jika model mengembalikan tuple (reg, cls), ambil reg-nya saja (indeks 0)
             if isinstance(out, tuple):
                 out = out[0]
-            # expm1 jika model dilatih dalam log1p
             pred_val = torch.expm1(out).cpu().numpy()
             preds[name].extend(pred_val)
 
@@ -208,7 +206,7 @@ for name in preds.keys():
     preds[name] = np.array(preds[name]).clip(min=0)
 
 # ============================================================
-# 5. SIMULASI GRAFIK BERGERAK (IPYTHON INTERACTIVE)
+# 5. SIMULASI GRAFIK BERGERAK & LIVE LEADERBOARD
 # ============================================================
 print("\n🎬 Memulai Simulasi Monitoring Real-Time...")
 time.sleep(2)
@@ -220,29 +218,44 @@ total_days = len(yr_test)
 for current_idx in range(window_size, total_days, 2):
     clear_output(wait=True)
     
-    # Slice window
+    # Slice window untuk grafik bergerak (Kiri)
     start_idx = current_idx - window_size
     end_idx = current_idx
-    
     x_axis = np.arange(start_idx, end_idx)
     
-    plt.figure(figsize=(15, 6))
+    # Hitung Akurasi RMSE Kumulatif (Running Metrics dari Awal hingga Saat Ini)
+    running_rmse = {}
+    for name in models.keys():
+        y_true = yr_test[:end_idx]
+        y_pred = preds[name][:end_idx]
+        running_rmse[name] = np.sqrt(np.mean((y_true - y_pred)**2))
+        
+    # Urutkan peringkat model berdasarkan RMSE terkecil (Terbaik ke Terburuk)
+    sorted_leaderboard = sorted(running_rmse.items(), key=lambda item: item[1])
+    winner_model = sorted_leaderboard[0][0]
     
-    # Plot Garis Aktual dan Prediksi
-    plt.plot(x_axis, yr_test[start_idx:end_idx], color='black', label='Aktual BMKG (Ground Truth)', linewidth=2.5, marker='o', markersize=4)
-    plt.plot(x_axis, preds['ST-Mamba-KAN'][start_idx:end_idx], color='red', label='Prediksi ST-Mamba-KAN (Model Kita)', linewidth=2.0, linestyle='-')
-    plt.plot(x_axis, preds['LSTM'][start_idx:end_idx], color='royalblue', label='Baseline CNN-LSTM', alpha=0.7, linestyle='--')
-    plt.plot(x_axis, preds['GRU'][start_idx:end_idx], color='darkorange', label='Baseline CNN-GRU', alpha=0.7, linestyle='--')
-    plt.plot(x_axis, preds['MLP'][start_idx:end_idx], color='purple', label='Baseline ST-Mamba-MLP', alpha=0.7, linestyle='--')
+    # Setup Figure 2-Panel
+    fig, axes = plt.subplots(1, 2, figsize=(18, 6.5), gridspec_kw={'width_ratios': [7, 3]})
     
-    # Batas Siaga Hujan Lebat (50 mm)
-    plt.axhline(50, color='crimson', linestyle=':', alpha=0.8, linewidth=2, label='Batas Bahaya Siaga (50 mm)')
+    # ----------------------------------------------------
+    # PANEL KIRI: Time-Series Curah Hujan Bergerak
+    # ----------------------------------------------------
+    # Plot Utama: Aktual & ST-Mamba-KAN (Dibuat Tebal & Terang)
+    axes[0].plot(x_axis, yr_test[start_idx:end_idx], color='black', label='Aktual BMKG (Ground Truth)', linewidth=3.0, marker='o', markersize=4, zorder=5)
+    axes[0].plot(x_axis, preds['ST-Mamba-KAN'][start_idx:end_idx], color='crimson', label='Prediksi ST-Mamba-KAN (Model Kita)', linewidth=2.5, zorder=6)
     
-    # Info Hari Terkini
+    # Plot Baselines (Dibuat tipis & transparan agar tidak membingungkan mata)
+    axes[0].plot(x_axis, preds['CNN-LSTM'][start_idx:end_idx], color='royalblue', label='Baseline CNN-LSTM', alpha=0.4, linestyle='--')
+    axes[0].plot(x_axis, preds['CNN-GRU'][start_idx:end_idx], color='darkorange', label='Baseline CNN-GRU', alpha=0.4, linestyle='--')
+    axes[0].plot(x_axis, preds['ST-Mamba-MLP'][start_idx:end_idx], color='purple', label='Baseline ST-Mamba-MLP', alpha=0.4, linestyle='--')
+    
+    # Garis Sakral Batas Siaga Hujan Lebat (50 mm)
+    axes[0].axhline(50, color='red', linestyle=':', alpha=0.8, linewidth=2, label='Batas Bahaya Siaga (50 mm)')
+    
+    # Judul & Label Panel Kiri
     latest_actual = yr_test[end_idx-1]
     latest_pred = preds['ST-Mamba-KAN'][end_idx-1]
     
-    # Status Siaga Bencana
     if latest_actual >= 50 or latest_pred >= 50:
         alert_status = "🚨 SIAGA EKSTREM: POTENSI BANJIR JABODETABEK 🚨"
         alert_color = 'red'
@@ -253,26 +266,56 @@ for current_idx in range(window_size, total_days, 2):
         alert_status = "🟢 AMAN: KONDISI CUACA NORMAL 🟢"
         alert_color = 'green'
         
-    plt.title(f"Simulasi Pergerakan Prediksi Curah Hujan Real-Time (Hari ke-{end_idx}/{total_days})\nStatus: {alert_status}", 
-              fontsize=14, fontweight='bold', color=alert_color, pad=10)
-    plt.xlabel("Langkah Hari Pengamatan (Test Set)", fontsize=11)
-    plt.ylabel("Curah Hujan (mm / Hari)", fontsize=11)
-    plt.ylim(-5, max(yr_test.max(), preds['ST-Mamba-KAN'].max()) + 10)
-    plt.legend(loc='upper left', frameon=True, shadow=True)
-    plt.grid(True, alpha=0.2)
+    axes[0].set_title(f"Visualisasi Live Curah Hujan (Hari ke-{end_idx}/{total_days})\nStatus: {alert_status}", 
+                      fontsize=13, fontweight='bold', color=alert_color)
+    axes[0].set_xlabel("Langkah Hari Pengamatan (Test Set)", fontsize=11)
+    axes[0].set_ylabel("Curah Hujan (mm / Hari)", fontsize=11)
+    axes[0].set_ylim(-5, max(yr_test.max(), preds['ST-Mamba-KAN'].max()) + 15)
+    axes[0].legend(loc='upper left', frameon=True, shadow=True, facecolor='white')
+    axes[0].grid(True, alpha=0.15)
     
+    # ----------------------------------------------------
+    # PANEL KANAN: Live Leaderboard (Running RMSE)
+    # ----------------------------------------------------
+    names_sorted = [item[0] for item in sorted_leaderboard]
+    rmse_values = [item[1] for item in sorted_leaderboard]
+    
+    # Warnai bar: Emas untuk pemenang pertama, abu-abu/biru muda untuk baselines
+    colors = ['gold' if n == winner_model else '#9fbcdb' for n in names_sorted]
+    
+    # Plot Bar Horizontal
+    bars = axes[1].barh(names_sorted, rmse_values, color=colors, edgecolor='black', height=0.6)
+    axes[1].invert_yaxis()  # Pemenang nomor 1 berada di paling atas
+    
+    # Tambahkan angka skor presisi di samping Bar
+    for bar in bars:
+        width = bar.get_width()
+        axes[1].text(width + 0.2, bar.get_y() + bar.get_height()/2, f'{width:.3f} mm', 
+                     va='center', ha='left', fontsize=11, fontweight='bold')
+                     
+    axes[1].set_title("🏆 LIVE LEADERBOARD\n(Cumulative RMSE Terkecil)", fontsize=13, fontweight='bold', color='navy')
+    axes[1].set_xlabel("RMSE (Makin Kecil Makin Presisi)", fontsize=11)
+    axes[1].set_xlim(0, max(rmse_values) + 3)
+    axes[1].grid(True, alpha=0.15, axis='x')
+    
+    # Sorot Pemenang Utama secara Teks
+    axes[1].text(0.5, -0.6, f"👑 CURRENT WINNER:\n{winner_model}", 
+                 fontsize=12, color='darkgoldenrod', weight='bold', 
+                 ha='center', va='center', transform=axes[1].transData,
+                 bbox=dict(facecolor='#fffde6', edgecolor='gold', boxstyle='round,pad=0.5'))
+                 
+    plt.tight_layout()
     plt.show()
     
-    # Cetak konsol info
-    print("="*75)
-    print(f"📡 STATISTIK LIVE MONITORING HARI KE-{end_idx}")
-    print("="*75)
+    # Output Konsol untuk Informasi Terperinci
+    print("="*85)
+    print(f"📡 STATISTIK OPERASIONAL LIVE MONITORING HARI KE-{end_idx}")
+    print("="*85)
+    print(f" -> Pemenang Akurasi Saat Ini       : {winner_model} (RMSE: {running_rmse[winner_model]:.3f} mm)")
     print(f" -> Curah Hujan Aktual (BMKG)       : {latest_actual:.2f} mm")
-    print(f" -> Prediksi ST-Mamba-KAN (Unggul)  : {latest_pred:.2f} mm")
-    print(f" -> Prediksi Baseline CNN-LSTM      : {preds['LSTM'][end_idx-1]:.2f} mm")
-    print(f" -> Prediksi Baseline CNN-GRU       : {preds['GRU'][end_idx-1]:.2f} mm")
-    print(f" -> Prediksi Baseline ST-Mamba-MLP  : {preds['MLP'][end_idx-1]:.2f} mm")
-    print("="*75)
+    print(f" -> Prediksi ST-Mamba-KAN (Kita)    : {latest_pred:.2f} mm")
+    print(f" -> Prediksi Baseline CNN-LSTM      : {preds['CNN-LSTM'][end_idx-1]:.2f} mm")
+    print("="*85)
     
-    # Kecepatan animasi bergerak
-    time.sleep(0.15)
+    # Kecepatan Animasi (Semakin kecil angkanya, semakin cepat bergerak)
+    time.sleep(0.12)
