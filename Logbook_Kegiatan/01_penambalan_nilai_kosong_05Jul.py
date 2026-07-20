@@ -1,9 +1,16 @@
 import os, pandas as pd, numpy as np, matplotlib.pyplot as plt
 import warnings; warnings.filterwarnings('ignore')
 
-VISUAL_DIR = "Visualisasi"
+# Mount Google Drive untuk Google Colab
+from google.colab import drive
+try:
+    drive.mount('/content/drive', force_remount=True)
+except Exception:
+    pass
+
+VISUAL_DIR = "/content/drive/MyDrive/Riset_ERA5_Land/Logbook_Kegiatan/Visualisasi"
 os.makedirs(VISUAL_DIR, exist_ok=True)
-BMKG_FILE = r"C:\kuliah nabil\DLL\PKM\PENDANAAN\Perancangan_Model_AI\Fase_1_Dataset_Download\Dataset\BMKG\Stasiun Meteorologi Kemayoran.xlsx"
+BMKG_FILE = "/content/drive/MyDrive/Riset_ERA5_Land/Fase_1_Dataset_Download/Dataset/BMKG/Stasiun Meteorologi Kemayoran.xlsx"
 
 print("[HARI 1] Simulasi Penambalan Nilai Kosong BMKG")
 if os.path.exists(BMKG_FILE):
@@ -23,7 +30,8 @@ if os.path.exists(BMKG_FILE):
     plt.title("Hari 1: Perbaikan Integritas Data BMKG")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(os.path.join(VISUAL_DIR, "Hari_01_Penambalan_Data.png"))
-    print("-> Visualisasi disimpan di", os.path.join(VISUAL_DIR, "Hari_01_Penambalan_Data.png"))
+    output_path = os.path.join(VISUAL_DIR, "Hari_01_Penambalan_Data.png")
+    plt.savefig(output_path)
+    print("-> Visualisasi disimpan di", output_path)
 else:
-    print("File BMKG tidak ditemukan untuk simulasi.")
+    print(f"File BMKG tidak ditemukan di Google Drive: {BMKG_FILE}")

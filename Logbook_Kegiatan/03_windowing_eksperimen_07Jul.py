@@ -1,11 +1,19 @@
 import os, matplotlib.pyplot as plt
-VISUAL_DIR = "Visualisasi"
+
+# Mount Google Drive untuk Google Colab
+from google.colab import drive
+try:
+    drive.mount('/content/drive', force_remount=True)
+except Exception:
+    pass
+
+VISUAL_DIR = "/content/drive/MyDrive/Riset_ERA5_Land/Logbook_Kegiatan/Visualisasi"
 os.makedirs(VISUAL_DIR, exist_ok=True)
 
 print("[HARI 3] Evaluasi Windowing 72 Jam vs 336 Jam")
 x = ['72 Jam (3 Hari)', '336 Jam (14 Hari)']
-memory = [2.4, 11.2] # dalam GB (Simulasi)
-akurasi = [75.4, 88.0] # dalam persen (Simulasi)
+memory = [2.4, 11.2] 
+akurasi = [75.4, 88.0] 
 
 fig, ax1 = plt.subplots(figsize=(8, 5))
 ax2 = ax1.twinx()
@@ -15,5 +23,6 @@ ax2.plot(x, akurasi, color='blue', marker='o', linewidth=2, label='Akurasi Detek
 ax1.set_ylabel('RAM (GB)', color='red')
 ax2.set_ylabel('Akurasi (%)', color='blue')
 plt.title("Hari 3: Trade-off Memori vs Akurasi (Windowing)")
-plt.savefig(os.path.join(VISUAL_DIR, "Hari_03_Windowing_Eksperimen.png"))
-print("-> Visualisasi disimpan di", os.path.join(VISUAL_DIR, "Hari_03_Windowing_Eksperimen.png"))
+output_path = os.path.join(VISUAL_DIR, "Hari_03_Windowing_Eksperimen.png")
+plt.savefig(output_path)
+print("-> Visualisasi disimpan di", output_path)

@@ -1,7 +1,16 @@
 import os, pandas as pd, seaborn as sns, matplotlib.pyplot as plt
-VISUAL_DIR = "Visualisasi"
+import warnings; warnings.filterwarnings('ignore')
+
+# Mount Google Drive untuk Google Colab
+from google.colab import drive
+try:
+    drive.mount('/content/drive', force_remount=True)
+except Exception:
+    pass
+
+VISUAL_DIR = "/content/drive/MyDrive/Riset_ERA5_Land/Logbook_Kegiatan/Visualisasi"
 os.makedirs(VISUAL_DIR, exist_ok=True)
-HYBRID = r"C:\kuliah nabil\DLL\PKM\PENDANAAN\Perancangan_Model_AI\Fase_3_Data_Fusion_dan_Pembersihan\Dataset\dataset_hybrid_clean_master.csv"
+HYBRID = "/content/drive/MyDrive/Riset_ERA5_Land/Fase_3_Data_Fusion_dan_Pembersihan/Dataset/dataset_hybrid_clean_master.csv"
 
 print("[HARI 5] Kalkulasi Distribusi Heavy-Tail")
 if os.path.exists(HYBRID):
@@ -14,7 +23,8 @@ if os.path.exists(HYBRID):
     plt.axvline(50, color='red', linestyle='--', label='Sangat Lebat (>50mm)')
     plt.title("Hari 5: Distribusi Hujan Heavy-Tail")
     plt.legend()
-    plt.savefig(os.path.join(VISUAL_DIR, "Hari_05_Heavy_Tail.png"))
-    print("-> Visualisasi disimpan di", os.path.join(VISUAL_DIR, "Hari_05_Heavy_Tail.png"))
+    output_path = os.path.join(VISUAL_DIR, "Hari_05_Heavy_Tail.png")
+    plt.savefig(output_path)
+    print("-> Visualisasi disimpan di", output_path)
 else:
-    print("File hybrid tidak ditemukan.")
+    print(f"File hybrid tidak ditemukan di Google Drive: {HYBRID}")
