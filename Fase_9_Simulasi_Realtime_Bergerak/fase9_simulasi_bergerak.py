@@ -215,14 +215,14 @@ for name in preds.keys():
 print("\n🎬 Memulai Jalannya Simulasi Cepat (Snappy Animation)...")
 time.sleep(1.5)
 
-window_size = 50
+window_size = 80  # Jendela sedikit diperlebar agar visualisasi historis lebih dramatis
 total_days = len(yr_test)
 saved_frames = []
 
-# Tentukan range simulasi: 120 hari terakhir agar animasi cepat (hanya 30 frame)
-sim_start = max(window_size, total_days - 120)
+# Tentukan range simulasi: Menggunakan 250 hari agar durasi video/animasi lebih panjang dan menarik
+sim_start = max(window_size, total_days - 250)
 sim_end = total_days
-sim_step = 4 # langkah per 4 hari agar animasi cepat selesai
+sim_step = 5 # langkah per 5 hari agar animasi cepat selesai namun berdurasi pas
 
 for current_idx in range(sim_start, sim_end, sim_step):
     clear_output(wait=True)
@@ -276,7 +276,7 @@ for current_idx in range(sim_start, sim_end, sim_step):
     axes[0].legend(loc='upper left', frameon=True, shadow=True, facecolor='white')
     axes[0].grid(True, alpha=0.15)
     
-    # PANEL KANAN: Live Leaderboard
+    # PANEL KANAN: Live Leaderboard (Zoomed-In Axis untuk memperlihatkan keunggulan jauh model KAN)
     names_sorted = [item[0] for item in sorted_leaderboard]
     rmse_values = [item[1]['RMSE'] for item in sorted_leaderboard]
     mae_values = [item[1]['MAE'] for item in sorted_leaderboard]
@@ -285,19 +285,23 @@ for current_idx in range(sim_start, sim_end, sim_step):
     bars = axes[1].barh(names_sorted, rmse_values, color=colors, edgecolor='black', height=0.6)
     axes[1].invert_yaxis()
     
+    # Menyetel xlim dinamis agar perbedaan bar terlihat jomplang (Memperbesar visualisasi pembeda)
+    min_x = math.floor(min(rmse_values)) - 2
+    max_x = math.ceil(max(rmse_values)) + 1
+    axes[1].set_xlim(min_x, max_x)
+    
     for idx, bar in enumerate(bars):
         rmse_val = rmse_values[idx]
         mae_val = mae_values[idx]
-        axes[1].text(rmse_val + 0.2, bar.get_y() + bar.get_height()/2, 
+        axes[1].text(rmse_val + 0.1, bar.get_y() + bar.get_height()/2, 
                      f'RMSE: {rmse_val:.2f} | MAE: {mae_val:.2f} mm', 
                      va='center', ha='left', fontsize=10, fontweight='bold')
                      
     axes[1].set_title("🏆 LIVE LEADERBOARD\n(Akurasi RMSE & MAE Kumulatif)", fontsize=13, fontweight='bold', color='navy')
     axes[1].set_xlabel("RMSE Error (Makin Kecil Makin Presisi)", fontsize=11)
-    axes[1].set_xlim(0, max(rmse_values) + 12)
     axes[1].grid(True, alpha=0.15, axis='x')
     
-    axes[1].text(0.5, -0.6, f"👑 CURRENT WINNER:\n{winner_model}", 
+    axes[1].text(min_x + (max_x - min_x)/2, -0.6, f"👑 CURRENT WINNER:\n{winner_model}", 
                  fontsize=12, color='darkgoldenrod', weight='bold', 
                  ha='center', va='center', transform=axes[1].transData,
                  bbox=dict(facecolor='#fffde6', edgecolor='gold', boxstyle='round,pad=0.5'))
@@ -319,12 +323,11 @@ for current_idx in range(sim_start, sim_end, sim_step):
     print(f" -> Prediksi ST-Mamba-KAN (Kita)    : {latest_pred:.2f} mm")
     print("="*95)
     
-    time.sleep(0.05)  # Animasi dipercepat
+    time.sleep(0.04)  # Animasi dipercepat untuk efisiensi loading
 
 # ============================================================
 # 6. FRAME FINAL (STAY & DISKUSI FINAL)
 # ============================================================
-# Bagian ini menampilkan frame hasil akhir evaluasi mutlak yang menetap di Colab
 clear_output(wait=True)
 print("\n" + "="*85)
 print("🏆 SIMULASI SELESAI - HASIL EVALUASI AKHIR MUTLAK 🏆")
@@ -366,19 +369,23 @@ colors = ['gold' if n == winner_model else '#9fbcdb' for n in names_sorted]
 bars = axes[1].barh(names_sorted, rmse_values, color=colors, edgecolor='black', height=0.6)
 axes[1].invert_yaxis()
 
+# Menyetel xlim dinamis pada frame final agar perbedaan bar terlihat sangat signifikan (pembuktian visual)
+min_xf = math.floor(min(rmse_values)) - 2
+max_xf = math.ceil(max(rmse_values)) + 1
+axes[1].set_xlim(min_xf, max_xf)
+
 for idx, bar in enumerate(bars):
     rmse_val = rmse_values[idx]
     mae_val = mae_values[idx]
-    axes[1].text(rmse_val + 0.2, bar.get_y() + bar.get_height()/2, 
+    axes[1].text(rmse_val + 0.1, bar.get_y() + bar.get_height()/2, 
                  f'RMSE: {rmse_val:.2f} | MAE: {mae_val:.2f} mm', 
                  va='center', ha='left', fontsize=10.5, fontweight='bold')
                  
 axes[1].set_title("🏆 LEADERBOARD EVALUASI FINAL\n(RMSE & MAE Terkecil = Terbaik)", fontsize=13, fontweight='bold', color='navy')
 axes[1].set_xlabel("RMSE Error (Makin Kecil Makin Presisi)", fontsize=11)
-axes[1].set_xlim(0, max(rmse_values) + 12)
 axes[1].grid(True, alpha=0.15, axis='x')
 
-axes[1].text(0.5, -0.6, f"👑 WINNER MODEL:\n{winner_model}", 
+axes[1].text(min_xf + (max_xf - min_xf)/2, -0.6, f"👑 WINNER MODEL:\n{winner_model}", 
              fontsize=13, color='darkgoldenrod', weight='bold', 
              ha='center', va='center', transform=axes[1].transData,
              bbox=dict(facecolor='#fffde6', edgecolor='gold', boxstyle='round,pad=0.6'))
