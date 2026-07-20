@@ -10,7 +10,7 @@ except Exception:
 
 VISUAL_DIR = "/content/drive/MyDrive/Riset_ERA5_Land/Logbook_Kegiatan/Visualisasi"
 os.makedirs(VISUAL_DIR, exist_ok=True)
-HYBRID = "/content/drive/MyDrive/Riset_ERA5_Land/Fase_3_Data_Fusion_dan_Pembersihan/Dataset/dataset_hybrid_clean_master.csv"
+HYBRID = "/content/drive/MyDrive/Riset_ERA5_Land/clean/dataset_hybrid_clean_master.csv"
 
 print("[HARI 5] Kalkulasi Distribusi Heavy-Tail")
 if os.path.exists(HYBRID):

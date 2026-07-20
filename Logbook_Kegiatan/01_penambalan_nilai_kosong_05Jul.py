@@ -10,7 +10,7 @@ except Exception:
 
 VISUAL_DIR = "/content/drive/MyDrive/Riset_ERA5_Land/Logbook_Kegiatan/Visualisasi"
 os.makedirs(VISUAL_DIR, exist_ok=True)
-BMKG_FILE = "/content/drive/MyDrive/Riset_ERA5_Land/Fase_1_Dataset_Download/Dataset/BMKG/Stasiun Meteorologi Kemayoran.xlsx"
+BMKG_FILE = "/content/drive/MyDrive/Riset_ERA5_Land/Data_BMKG/Stasiun Meteorologi Kemayoran.xlsx"
 
 print("[HARI 1] Simulasi Penambalan Nilai Kosong BMKG")
 if os.path.exists(BMKG_FILE):
