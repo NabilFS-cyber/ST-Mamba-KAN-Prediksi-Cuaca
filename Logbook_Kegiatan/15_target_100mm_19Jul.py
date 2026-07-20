@@ -1,4 +1,4 @@
-print("[HARI 15] Penetapan Sasaran Hidrologi Kritis (>100mm)")
+print("Penetapan Sasaran Hidrologi Kritis (>100mm)")
 print("Simulasi mitigasi:")
 print("- Hujan 50mm: Saluran drainase Jabodetabek rata-rata masih sanggup menampung (Safe).")
 print("- Hujan 100mm: Terjadi fenomena overtopping di berbagai selokan, genangan masif (Danger).")

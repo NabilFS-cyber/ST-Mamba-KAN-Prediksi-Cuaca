@@ -1,7 +1,6 @@
 import os, pandas as pd, numpy as np, matplotlib.pyplot as plt
 import warnings; warnings.filterwarnings('ignore')
 
-# Mount Google Drive untuk Google Colab
 from google.colab import drive
 try:
     drive.mount('/content/drive', force_remount=True)
@@ -12,7 +11,7 @@ VISUAL_DIR = "/content/drive/MyDrive/Riset_ERA5_Land/Logbook_Kegiatan/Visualisas
 os.makedirs(VISUAL_DIR, exist_ok=True)
 BMKG_FILE = "/content/drive/MyDrive/Riset_ERA5_Land/Data_BMKG/Stasiun Meteorologi Kemayoran.xlsx"
 
-print("[HARI 1] Simulasi Penambalan Nilai Kosong BMKG")
+print("Simulasi Penambalan Nilai Kosong BMKG")
 if os.path.exists(BMKG_FILE):
     df = pd.read_excel(BMKG_FILE, skiprows=8)
     col = 'Tavg' if 'Tavg' in df.columns else df.columns[2]
@@ -27,10 +26,10 @@ if os.path.exists(BMKG_FILE):
     plt.figure(figsize=(10, 4))
     plt.plot(data_tambal, label="Ditambal (ffill/bfill)", color='green', alpha=0.7)
     plt.plot(data_mentah, label="Mentah (Bolong)", color='red', marker='o', linestyle='dashed', linewidth=1)
-    plt.title("Hari 1: Perbaikan Integritas Data BMKG")
+    plt.title("Perbaikan Integritas Data BMKG")
     plt.legend()
     plt.tight_layout()
-    output_path = os.path.join(VISUAL_DIR, "Hari_01_Penambalan_Data.png")
+    output_path = os.path.join(VISUAL_DIR, "Penambalan_Data.png")
     plt.savefig(output_path)
     print("-> Visualisasi disimpan di", output_path)
 else:

@@ -1,6 +1,5 @@
 import os, matplotlib.pyplot as plt
 
-# Mount Google Drive untuk Google Colab
 from google.colab import drive
 try:
     drive.mount('/content/drive', force_remount=True)
@@ -10,7 +9,7 @@ except Exception:
 VISUAL_DIR = "/content/drive/MyDrive/Riset_ERA5_Land/Logbook_Kegiatan/Visualisasi"
 os.makedirs(VISUAL_DIR, exist_ok=True)
 
-print("[HARI 3] Evaluasi Windowing 72 Jam vs 336 Jam")
+print("Evaluasi Windowing 72 Jam vs 336 Jam")
 x = ['72 Jam (3 Hari)', '336 Jam (14 Hari)']
 memory = [2.4, 11.2] 
 akurasi = [75.4, 88.0] 
@@ -22,7 +21,7 @@ ax2.plot(x, akurasi, color='blue', marker='o', linewidth=2, label='Akurasi Detek
 
 ax1.set_ylabel('RAM (GB)', color='red')
 ax2.set_ylabel('Akurasi (%)', color='blue')
-plt.title("Hari 3: Trade-off Memori vs Akurasi (Windowing)")
-output_path = os.path.join(VISUAL_DIR, "Hari_03_Windowing_Eksperimen.png")
+plt.title("Trade-off Memori vs Akurasi (Windowing)")
+output_path = os.path.join(VISUAL_DIR, "Windowing_Eksperimen.png")
 plt.savefig(output_path)
 print("-> Visualisasi disimpan di", output_path)
