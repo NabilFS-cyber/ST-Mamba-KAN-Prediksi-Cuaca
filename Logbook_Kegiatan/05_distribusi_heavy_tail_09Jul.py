@@ -22,7 +22,7 @@ if os.path.exists(HYBRID):
     plt.axvline(50, color='red', linestyle='--', label='Sangat Lebat (>50mm)')
     plt.title("Distribusi Hujan Heavy-Tail")
     plt.legend()
-    output_path = os.path.join(VISUAL_DIR, "Heavy_Tail.png")
+    output_path = os.path.join(VISUAL_DIR, "Hari_05_Heavy_Tail.png")
     plt.savefig(output_path)
     print("-> Visualisasi disimpan di", output_path)
 else:

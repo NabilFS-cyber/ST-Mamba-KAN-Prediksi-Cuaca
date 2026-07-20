@@ -15,6 +15,6 @@ labels = [f'Brankas 1 (Pra-Pelatihan)\n{sizes[0]} Baris', f'Brankas 2 (Penyesuai
 plt.figure(figsize=(6, 6))
 plt.pie(sizes, labels=labels, colors=['#1f77b4', '#ff7f0e'], autopct='%1.1f%%', explode=(0.1, 0))
 plt.title("Rasio Time-Split Historis")
-output_path = os.path.join(VISUAL_DIR, "Time_Split.png")
+output_path = os.path.join(VISUAL_DIR, "Hari_02_Time_Split.png")
 plt.savefig(output_path)
 print("-> Visualisasi disimpan di", output_path)

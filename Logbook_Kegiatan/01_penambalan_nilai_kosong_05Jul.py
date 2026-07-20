@@ -28,8 +28,10 @@ if os.path.exists(BMKG_FILE):
     plt.plot(data_mentah, label="Mentah (Bolong)", color='red', marker='o', linestyle='dashed', linewidth=1)
     plt.title("Perbaikan Integritas Data BMKG")
     plt.legend()
+    plt.xlabel("Indeks Waktu")
+    plt.ylabel(f"Nilai {col}")
     plt.tight_layout()
-    output_path = os.path.join(VISUAL_DIR, "Penambalan_Data.png")
+    output_path = os.path.join(VISUAL_DIR, "Hari_01_Penambalan_Data.png")
     plt.savefig(output_path)
     print("-> Visualisasi disimpan di", output_path)
 else:
