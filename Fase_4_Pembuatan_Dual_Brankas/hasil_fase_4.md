@@ -20,8 +20,8 @@ Skrip memperbaiki ini dengan menggeser (*Shift*) tanggal dan jam satelit menjadi
 ### 2. Algoritma RAM-Safe (Bilinear Interpolation per Stasiun)
 Untuk mencegah RAM Google Colab meledak karena mengkalkulasi jutaan titik secara bersamaan, skrip menggunakan metode *Bilinear Interpolation* yang mengekstrak nilai piksel cuaca satelit langsung secara terfokus pada titik koordinat persis setiap stasiun, stasiun demi stasiun.
 
-### 3. Penetapan "Threshold Sakral" (Badai Ekstrem > 100 mm)
-Data dipindai untuk mencari target anomali tertinggi: Curah Hujan Ekstrem (di atas 100 mm/hari). Laporan Fase 4 menemukan ketimpangan kelas badai yang sangat brutal. Artinya, badai mematikan ini sangat langka (minoritas super), yang mengharuskan algoritma *SMOTETomek* untuk turun tangan nanti di Fase 5.
+### 3. Penetapan "Threshold Sakral" (Badai Ekstrem >= 50 mm)
+Data dipindai untuk mencari target anomali tertinggi: Curah Hujan Ekstrem (di atas 50 mm/hari). Laporan Fase 4 menemukan ketimpangan kelas badai yang cukup brutal. Artinya, badai mematikan ini sangat langka (minoritas super), yang mengharuskan algoritma *SMOTETomek* untuk turun tangan nanti di Fase 5.
 
 ### 4. Pembentukan "Titanium Shield" (Split Data Aman)
 Tabel raksasa dipecah menjadi dua rentang waktu absolut (Dual Brankas) berstruktur pelindung dengan presisi (11 fitur cuaca satelit ERA5-Land + 6 indikator stasiun BMKG = Total 17 fitur persilangan).

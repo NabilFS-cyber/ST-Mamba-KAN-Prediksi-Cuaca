@@ -1,5 +1,0 @@
-print("Perbaikan Bug Format Penanggalan Pandas")
-print("Sebelum perbaikan: 02/05/2024 dibaca sebagai 05 Februari 2024 (Format MM/DD)")
-print("Aplikasi parameter `dayfirst=True`...")
-print("Sesudah perbaikan: 02/05/2024 dibaca akurat sebagai 02 Mei 2024 (Format DD/MM)")
-print("Integritas kronologi musim berhasil diselamatkan.")

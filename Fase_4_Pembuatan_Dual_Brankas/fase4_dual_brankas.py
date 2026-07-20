@@ -1,6 +1,6 @@
 # =====================================================================
 # PHASE 4 – DUAL BRANKAS CREATION (PRE-TRAIN & FINE-TUNE)
-# TARGET SAKRAL: HUJAN SANGAT LEBAT / EKSTREM (> 100 MM)
+# TARGET SAKRAL: HUJAN SANGAT LEBAT / EKSTREM (>= 50 MM)
 # FINAL EDITION: RAM-SAFE + BILINEAR + WIB + SINKRONISASI + TITANIUM SHIELD
 # =====================================================================
 from google.colab import drive
@@ -67,7 +67,7 @@ era5_per_station = pd.concat(station_era5_frames, ignore_index=True)
 print(f" ✅ Sukses! Total baris satelit harian WIB: {len(era5_per_station)}")
 
 # =====================================================================
-# 🗄️ STRATEGI PEMBENTUKAN DUAL BRANKAS (TARGET EXTREME > 100 mm)
+# 🔥 STRATEGI PEMBENTUKAN DUAL BRANKAS (TARGET EXTREME >= 50 mm)
 # =====================================================================
 CUTOFF_DATE = pd.to_datetime('2024-05-31')
 
@@ -75,8 +75,8 @@ print("\n📦 MEMBANGUN BRANKAS 1: PRE-TRAINING (Satelit Murni 2016 - Mei 2024)"
 brankas1 = era5_per_station[era5_per_station['DATE'] <= CUTOFF_DATE].copy()
 brankas1['RR'] = brankas1['tp'] * 1000.0
 
-# 🔥 ATURAN SAKRAL PROPOSAL: Hujan Ekstrem Sangat Lebat jika > 100 mm/hari
-brankas1['EXTREME'] = (brankas1['RR'] > 100).astype(int)
+# ⚠️ ATURAN SAKRAL PROPOSAL: Hujan Ekstrem Siaga jika >= 50 mm/hari
+brankas1['EXTREME'] = (brankas1['RR'] >= 50).astype(int)
 brankas1 = brankas1.dropna(subset=['RR'])
 
 # 🧠 Suntik kolom BMKG kosong (NaN) agar matriks fitur simetris
@@ -94,8 +94,8 @@ if not os.path.isfile(csv_hybrid_path):
 brankas2 = pd.read_csv(csv_hybrid_path)
 brankas2['DATE'] = pd.to_datetime(brankas2['TANGGAL_FUSI']).dt.normalize()
 
-# 🔥 ATURAN SAKRAL PROPOSAL: Hujan Ekstrem Sangat Lebat jika > 100 mm/hari
-brankas2['EXTREME'] = (brankas2['RR'] > 100).astype(int)
+# ⚠️ ATURAN SAKRAL PROPOSAL: Hujan Ekstrem Siaga jika >= 50 mm/hari
+brankas2['EXTREME'] = (brankas2['RR'] >= 50).astype(int)
 
 brankas2.rename(columns={'Nama_Stasiun': 'STATION'}, inplace=True)
 for name, info in stasiun_config.items():
@@ -128,20 +128,21 @@ brankas2.to_parquet(path_b2, index=False)
 # 🚨 LAPORAN KETIMPANGAN DATA (IMBALANCE RATIO) & VALIDASI AKHIR
 # ---------------------------------------------------------------------
 print("\n" + "="*60)
-print("🚨 LAPORAN KETIMPANGAN DATA (AMBANG BATAS > 100mm) 🚨")
-print("="*60)
+print("🚨 LAPORAN KETIMPANGAN DATA (AMBANG BATAS >= 50mm) 🚨")
+print("-" * 55)
+print("BRANKAS 1 (Pre-Train: Jan 2016 - Mei 2024)")
 b1_counts = brankas1['EXTREME'].value_counts()
 b1_ratio = b1_counts.get(0, 0) / max(b1_counts.get(1, 1), 1)
-print("BRANKAS 1 (Pre-Training Satelit 2016 - Mei 2024):")
-print(f" -> Hari Aman (<100mm)   : {b1_counts.get(0, 0)} hari")
-print(f" -> Hari Badai (>100mm)  : {b1_counts.get(1, 0)} hari")
+print(f" -> Hari Aman (<50mm)   : {b1_counts.get(0, 0)} hari")
+print(f" -> Hari Badai (>=50mm) : {b1_counts.get(1, 0)} hari")
 print(f" -> Rasio Ketimpangan    : 1 : {b1_ratio:.0f}")
 
 b2_counts = brankas2['EXTREME'].value_counts()
 b2_ratio = b2_counts.get(0, 0) / max(b2_counts.get(1, 1), 1)
-print("\nBRANKAS 2 (Fine-Tuning BMKG Real Jun 2024 - Mei 2026):")
-print(f" -> Hari Aman (<100mm)   : {b2_counts.get(0, 0)} hari")
-print(f" -> Hari Badai (>100mm)  : {b2_counts.get(1, 0)} hari")
+print("\nBRANKAS 2 (Fine-Tune: Jun 2024 - Mei 2026)")
+b2_counts = brankas2['EXTREME'].value_counts()
+print(f" -> Hari Aman (<50mm)   : {b2_counts.get(0, 0)} hari")
+print(f" -> Hari Badai (>=50mm) : {b2_counts.get(1, 0)} hari")
 print(f" -> Rasio Ketimpangan    : 1 : {b2_ratio:.0f}")
 
 # Validasi Titanium Shield
@@ -162,16 +163,16 @@ fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 sns.histplot(brankas1['RR'], bins=50, kde=True, ax=axes[0], color='royalblue')
 axes[0].set_title('Distribusi Curah Hujan Brankas 1 (Satelit ERA5-Land)')
 axes[0].set_xlabel('RR (mm)')
-axes[0].axvline(100, color='red', linestyle='--', linewidth=2, label='Batas Ekstrem (100mm)')
+axes[0].axvline(50, color='red', linestyle='--', linewidth=2, label='Batas Ekstrem (50mm)')
 axes[0].legend()
 
 sns.histplot(brankas2['RR'], bins=50, kde=True, ax=axes[1], color='forestgreen')
 axes[1].set_title('Distribusi Curah Hujan Brankas 2 (BMKG Ground-Truth)')
 axes[1].set_xlabel('RR (mm)')
-axes[1].axvline(100, color='red', linestyle='--', linewidth=2, label='Batas Ekstrem (100mm)')
+axes[1].axvline(50, color='red', linestyle='--', linewidth=2, label='Batas Ekstrem (50mm)')
 axes[1].legend()
 
-plt.suptitle('Analisis Distribusi Curah Hujan Dual Brankas (Ambang Ekstrem > 100mm)',
+plt.suptitle('Analisis Distribusi Curah Hujan Dual Brankas (Ambang Ekstrem >= 50mm)', 
              fontsize=13, fontweight='bold')
 plt.tight_layout()
 plt.show()

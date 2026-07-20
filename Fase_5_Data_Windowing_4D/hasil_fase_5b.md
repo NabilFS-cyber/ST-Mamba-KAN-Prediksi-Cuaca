@@ -24,9 +24,9 @@ Tabel datar dihancurkan dan dirakit ulang ke dalam susunan dimensi `[N_Samples, 
 
 ### 2. Penetapan Multi-Class (3 Level)
 Selain melatih AI untuk meramal angka mutlak milimeter (Regresi), skrip pada fase ini mendidik AI untuk membunyikan alarm keselamatan (Klasifikasi) berdasarkan 3 level bahaya:
-- **Kelas 0 (Aman):** Hujan < 20 mm
-- **Kelas 1 (Waspada):** Hujan 20 mm - 50 mm
-- **Kelas 2 (Siaga / Badai):** Hujan > 50 mm (atau > 100mm Ekstrem)
+- **Kelas 0 (Aman):** Hujan < 20 mm (Cerah hingga Sedang).
+- **Kelas 1 (Waspada):** Hujan 20 - 50 mm (Lebat).
+- **Kelas 2 (Siaga / Badai):** Hujan >= 50 mm (Sangat Lebat/Ekstrem).
 
 ### 3. Bug Fix Krusial: SMOTETomek Flatten Trick
 Algoritma SMOTE secara *default* hanya bisa menangani data 2D dan buta pada kasus Regresi. Jika dipaksakan pada matriks 4D, nilai Regresi curah hujannya (*yr*) akan hancur teracak.
