@@ -1,10 +1,11 @@
 # =====================================================================
-# PHASE 9 – SIMULASI PREDIKSI REAL-TIME BERGERAK (LIVE LEADERBOARD)
+# PHASE 9 – SIMULASI PREDIKSI REAL-TIME BERGERAK & AUTO-SAVE GIF
 # =====================================================================
 # Script ini menjalankan simulasi perbandingan dinamis curah hujan
 # menggunakan 2-Panel Dashboard: Time-Series Bergerak (Kiri) dan 
-# Live Leaderboard Akurasi RMSE (Kanan). Pemenang ditunjukkan secara real-time!
-# 100% Data Otentik dari hasil pelatihan model asli Anda.
+# Live Leaderboard Akurasi RMSE (Kanan).
+# Hasil simulasi secara otomatis dirakit menjadi berkas animas .GIF
+# dan disimpan langsung ke Google Drive Anda!
 # =====================================================================
 import os, time, math, warnings
 import torch
@@ -15,6 +16,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, TensorDataset
 from IPython.display import clear_output
+from PIL import Image
 
 warnings.filterwarnings('ignore')
 
@@ -30,6 +32,9 @@ print(f"🖥️ Perangkat Kerja: {device}")
 
 TENSOR_ROOT = '/content/drive/MyDrive/Riset_ERA5_Land/tensors_mamba'
 CLEAN_ROOT  = '/content/drive/MyDrive/Riset_ERA5_Land/clean'
+VISUAL_DIR  = '/content/drive/MyDrive/Riset_ERA5_Land/Logbook_Kegiatan/Visualisasi'
+os.makedirs(VISUAL_DIR, exist_ok=True)
+
 HIDDEN_DIM, N_MAMBA_LAYERS = 192, 4
 
 # ============================================================
@@ -148,7 +153,7 @@ class Ultimate_GAT_Mamba_KAN(nn.Module):
         return out.squeeze(-1)
 
 # ============================================================
-# 3. MEMUAT DATA & MODEL ASLI
+# 3. MEMUAT DATA & MODEL
 # ============================================================
 print("\n🔄 Memuat Data Uji BMKG Aktual...")
 X_test = torch.load(f'{TENSOR_ROOT}/b2_test_X_4d.pt', map_location=device, weights_only=False)
@@ -208,51 +213,46 @@ for name in preds.keys():
 # ============================================================
 # 5. SIMULASI GRAFIK BERGERAK & LIVE LEADERBOARD
 # ============================================================
-print("\n🎬 Memulai Simulasi Monitoring Real-Time...")
+print("\n🎬 Memulai Simulasi Monitoring & Perekaman Frame...")
 time.sleep(2)
 
 window_size = 50
 total_days = len(yr_test)
+saved_frames = []
 
-# Loop simulasi pergeseran hari
-for current_idx in range(window_size, total_days, 2):
+# Batasi jumlah hari untuk simulasi & hemat memori pembuatan GIF
+sim_step = 2 # lompati setiap 2 hari
+max_sim_days = min(total_days, 180) # simulasikan 180 hari pertama agar ukuran GIF optimal
+
+for current_idx in range(window_size, max_sim_days, sim_step):
     clear_output(wait=True)
     
-    # Slice window untuk grafik bergerak (Kiri)
     start_idx = current_idx - window_size
     end_idx = current_idx
     x_axis = np.arange(start_idx, end_idx)
     
-    # Hitung Akurasi RMSE Kumulatif (Running Metrics dari Awal hingga Saat Ini)
+    # Hitung Akurasi RMSE Kumulatif
     running_rmse = {}
     for name in models.keys():
         y_true = yr_test[:end_idx]
         y_pred = preds[name][:end_idx]
         running_rmse[name] = np.sqrt(np.mean((y_true - y_pred)**2))
         
-    # Urutkan peringkat model berdasarkan RMSE terkecil (Terbaik ke Terburuk)
     sorted_leaderboard = sorted(running_rmse.items(), key=lambda item: item[1])
     winner_model = sorted_leaderboard[0][0]
     
-    # Setup Figure 2-Panel
+    # Plotting
     fig, axes = plt.subplots(1, 2, figsize=(18, 6.5), gridspec_kw={'width_ratios': [7, 3]})
     
-    # ----------------------------------------------------
-    # PANEL KIRI: Time-Series Curah Hujan Bergerak
-    # ----------------------------------------------------
-    # Plot Utama: Aktual & ST-Mamba-KAN (Dibuat Tebal & Terang)
+    # PANEL KIRI: Time-Series
     axes[0].plot(x_axis, yr_test[start_idx:end_idx], color='black', label='Aktual BMKG (Ground Truth)', linewidth=3.0, marker='o', markersize=4, zorder=5)
     axes[0].plot(x_axis, preds['ST-Mamba-KAN'][start_idx:end_idx], color='crimson', label='Prediksi ST-Mamba-KAN (Model Kita)', linewidth=2.5, zorder=6)
-    
-    # Plot Baselines (Dibuat tipis & transparan agar tidak membingungkan mata)
     axes[0].plot(x_axis, preds['CNN-LSTM'][start_idx:end_idx], color='royalblue', label='Baseline CNN-LSTM', alpha=0.4, linestyle='--')
     axes[0].plot(x_axis, preds['CNN-GRU'][start_idx:end_idx], color='darkorange', label='Baseline CNN-GRU', alpha=0.4, linestyle='--')
     axes[0].plot(x_axis, preds['ST-Mamba-MLP'][start_idx:end_idx], color='purple', label='Baseline ST-Mamba-MLP', alpha=0.4, linestyle='--')
     
-    # Garis Sakral Batas Siaga Hujan Lebat (50 mm)
     axes[0].axhline(50, color='red', linestyle=':', alpha=0.8, linewidth=2, label='Batas Bahaya Siaga (50 mm)')
     
-    # Judul & Label Panel Kiri
     latest_actual = yr_test[end_idx-1]
     latest_pred = preds['ST-Mamba-KAN'][end_idx-1]
     
@@ -274,20 +274,14 @@ for current_idx in range(window_size, total_days, 2):
     axes[0].legend(loc='upper left', frameon=True, shadow=True, facecolor='white')
     axes[0].grid(True, alpha=0.15)
     
-    # ----------------------------------------------------
-    # PANEL KANAN: Live Leaderboard (Running RMSE)
-    # ----------------------------------------------------
+    # PANEL KANAN: Live Leaderboard
     names_sorted = [item[0] for item in sorted_leaderboard]
     rmse_values = [item[1] for item in sorted_leaderboard]
-    
-    # Warnai bar: Emas untuk pemenang pertama, abu-abu/biru muda untuk baselines
     colors = ['gold' if n == winner_model else '#9fbcdb' for n in names_sorted]
     
-    # Plot Bar Horizontal
     bars = axes[1].barh(names_sorted, rmse_values, color=colors, edgecolor='black', height=0.6)
-    axes[1].invert_yaxis()  # Pemenang nomor 1 berada di paling atas
+    axes[1].invert_yaxis()
     
-    # Tambahkan angka skor presisi di samping Bar
     for bar in bars:
         width = bar.get_width()
         axes[1].text(width + 0.2, bar.get_y() + bar.get_height()/2, f'{width:.3f} mm', 
@@ -298,24 +292,55 @@ for current_idx in range(window_size, total_days, 2):
     axes[1].set_xlim(0, max(rmse_values) + 3)
     axes[1].grid(True, alpha=0.15, axis='x')
     
-    # Sorot Pemenang Utama secara Teks
     axes[1].text(0.5, -0.6, f"👑 CURRENT WINNER:\n{winner_model}", 
                  fontsize=12, color='darkgoldenrod', weight='bold', 
                  ha='center', va='center', transform=axes[1].transData,
                  bbox=dict(facecolor='#fffde6', edgecolor='gold', boxstyle='round,pad=0.5'))
                  
     plt.tight_layout()
+    
+    # Simpan Frame Sementara untuk perakitan GIF
+    frame_path = f"/tmp/frame_{current_idx}.png"
+    plt.savefig(frame_path, dpi=120)  # DPI 120 agar ukuran GIF efisien
+    saved_frames.append(frame_path)
+    
     plt.show()
     
-    # Output Konsol untuk Informasi Terperinci
+    # Cetak konsol
     print("="*85)
     print(f"📡 STATISTIK OPERASIONAL LIVE MONITORING HARI KE-{end_idx}")
     print("="*85)
     print(f" -> Pemenang Akurasi Saat Ini       : {winner_model} (RMSE: {running_rmse[winner_model]:.3f} mm)")
     print(f" -> Curah Hujan Aktual (BMKG)       : {latest_actual:.2f} mm")
     print(f" -> Prediksi ST-Mamba-KAN (Kita)    : {latest_pred:.2f} mm")
-    print(f" -> Prediksi Baseline CNN-LSTM      : {preds['CNN-LSTM'][end_idx-1]:.2f} mm")
     print("="*85)
     
-    # Kecepatan Animasi (Semakin kecil angkanya, semakin cepat bergerak)
-    time.sleep(0.12)
+    time.sleep(0.08)
+
+# ============================================================
+# 6. RAKIT FRAME MENJADI ANIMASI .GIF & SAVE TO DRIVE
+# ============================================================
+print("\n📦 Merakit frame simulasi menjadi animasi .GIF...")
+try:
+    images = [Image.open(f) for f in saved_frames]
+    gif_out_path = os.path.join(VISUAL_DIR, "Hari_10_Simulasi_Prediction_Live.gif")
+    
+    # Simpan sebagai GIF berulang (loop=0)
+    images[0].save(
+        gif_out_path,
+        save_all=True,
+        append_images=images[1:],
+        duration=120,  # Durasi transisi frame (ms)
+        loop=0
+    )
+    print(f"\n🎉 SUKSES TOTAL!")
+    print(f" -> Animasi tersimpan di: {gif_out_path}")
+    print(" -> File ini bisa langsung Anda pasang di PPT atau Laporan Akhir Anda!")
+    
+    # Bersihkan file sampah di /tmp/
+    for f in saved_frames:
+        if os.path.exists(f):
+            os.remove(f)
+            
+except Exception as e:
+    print(f" ❌ Gagal merakit GIF: {e}")
