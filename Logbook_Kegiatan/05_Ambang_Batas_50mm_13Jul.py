@@ -31,7 +31,8 @@ axes[1].set_xlabel('Curah Hujan (mm)')
 axes[1].axvline(50, color='red', linestyle='--', linewidth=2, label='Batas Siaga (>= 50mm)')
 axes[1].legend()
 
-plt.suptitle("Analisis Distribusi Curah Hujan Heavy-Tail & Threshold Ekstrem (>= 50mm)", fontsize=15, fontweight='bold', pad=15)
+# Fix AttributeError: 'Text' object has no property 'pad'
+plt.suptitle("Analisis Distribusi Curah Hujan Heavy-Tail & Threshold Ekstrem (>= 50mm)", fontsize=15, fontweight='bold', y=0.98)
 
 out = os.path.join(VISUAL_DIR, "Hari_05_Ambang_Batas_50mm.png")
 plt.tight_layout()

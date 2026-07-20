@@ -30,7 +30,8 @@ sns.kdeplot(data=pd.DataFrame(scaled, columns=cols_real), ax=axes[1])
 axes[1].set_title("Setelah StandardScaler (Z-Score Terpusat & Normal)")
 axes[1].set_ylabel("")
 
-plt.suptitle("Standardisasi Skala Matriks Fitur Cuaca Murni", fontsize=14, fontweight='bold', pad=15)
+# Fix AttributeError: 'Text' object has no property 'pad'
+plt.suptitle("Standardisasi Skala Matriks Fitur Cuaca Murni", fontsize=14, fontweight='bold', y=0.98)
 out = os.path.join(VISUAL_DIR, "Hari_09_Normalisasi_dan_Sweet_Spot.png")
 plt.tight_layout()
 plt.savefig(out, dpi=300)

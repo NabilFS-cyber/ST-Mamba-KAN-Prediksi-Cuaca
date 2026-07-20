@@ -20,7 +20,8 @@ y_col = next((c for c in ['RR', 'rr', 'RAINFALL', 'rainfall_bmkg'] if c in df.co
 
 plt.figure(figsize=(8, 8))
 if x_col and y_col:
-    x_val = df[x_col] * 1000.0 if df[x_col].max() < 1.0 else df[x_col]
+    # Selalu kalikan 1000 jika kolom adalah 'tp' (ERA5 m ke mm) atau rata-ratanya sangat kecil
+    x_val = df[x_col] * 1000.0 if (df[x_col].mean() < 0.1 or x_col == 'tp') else df[x_col]
     y_val = df[y_col]
     sns.regplot(x=x_val, y=y_val, scatter_kws={'alpha':0.3, 'color':'royalblue'}, line_kws={'color':'red'})
     plt.xlabel(f"Curah Hujan Satelit ERA5-Land ({x_col}) [mm]")
