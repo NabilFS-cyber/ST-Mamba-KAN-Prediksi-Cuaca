@@ -40,7 +40,8 @@ Dari arsitektur primitif hingga lahirnya "Monster" AI Mitigasi:
 
 ### TAHAP 3: DEPLOYMENT & LIVE INFERENCE (Validasi Produksi)
 Pembuktian penutup bahwa model ini bukan sekadar rumus di atas kertas:
-- **Phase 9 - Mega Dashboard Evaluasi:** Pengujian komprehensif *Live Inference* (100% Data-Driven) pada *Test Set* perawan. Membuktikan secara kasatmata jarak kualitas antara AI kita dan Baseline Klasik.
+- **Fase 8 - Mega Dashboard Evaluasi:** Pengujian komprehensif *Live Inference* (100% Data-Driven) pada *Test Set* perawan. Membuktikan secara kasatmata jarak kualitas antara AI kita dan Baseline Klasik.
+- **Fase 9 - Simulasi Prediksi Real-Time Bergerak:** Pengembangan visualisasi dinamis berbasis grafik jendela geser (*sliding window*) untuk mensimulasikan pemantauan cuaca ekstrem harian secara interaktif di layar kontrol BPBD.
 - **Bug Fix Konsol Alarm Hibrida:** Menemukan dan membasmi *bug* logika peringatan yang fatal. Menetapkan konsensus sistem bahwa **Probabilitas Klasifikasi** bertindak sebagai "Komandan Penentu" Sirine Alarm, sementara **Regresi** bertindak sebagai "Ahli Hidrologi" (kalkulasi debit overtopping).
 - Simulasi Pusat Kendali BPBD kini berhasil membunyikan **Peringatan Siaga (🔴)** secara instan dan mandiri ketika mendeteksi badai >100mm dengan tingkat keyakinan 89.77%.
 
@@ -50,3 +51,4 @@ Pembuktian penutup bahwa model ini bukan sekadar rumus di atas kertas:
 Proyek Riset Pemodelan AI PKM ini telah **SELESAI SEPENUHNYA**. Dari puing-puing deret data mentah satelit dan kode anomali stasiun bumi, kita telah berhasil memahat sebuah arsitektur Hibrida kelas dunia (*State-of-the-Art*) yang tidak berbohong. AI ini siap sedia melindungi jutaan nyawa warga Jabodetabek dari ancaman banjir ekstrem.
 
 **Status Proyek Saat Ini:** Mesin AI (*Backend*) selesai mutlak. Siap diterjunkan dan diintegrasikan ke *Frontend* (Web Dashboard Dashboard.blade.php).
+
