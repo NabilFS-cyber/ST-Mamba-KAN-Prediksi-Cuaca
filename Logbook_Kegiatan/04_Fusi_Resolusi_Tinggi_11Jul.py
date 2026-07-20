@@ -1,30 +1,33 @@
-import os, matplotlib.pyplot as plt, numpy as np
-
+import os, pandas as pd, matplotlib.pyplot as plt, seaborn as sns
 from google.colab import drive
-try: drive.mount('/content/drive', force_remount=True)
-except Exception: pass
+
+try: 
+    drive.mount('/content/drive', force_remount=True)
+except Exception: 
+    pass
 
 VISUAL_DIR = "/content/drive/MyDrive/Riset_ERA5_Land/Logbook_Kegiatan/Visualisasi"
+DATA_PATH = "/content/drive/MyDrive/Riset_ERA5_Land/clean/dataset_hybrid_clean_master.csv"
 os.makedirs(VISUAL_DIR, exist_ok=True)
 
-print("Komparasi Fusi Resolusi ERA5 (31km) vs ERA5-Land (9km)")
-np.random.seed(99)
-grid_kasar = np.kron(np.random.rand(5, 5), np.ones((3, 3)))
-grid_halus = grid_kasar + np.random.randn(15, 15)*0.1
+df = pd.read_csv(DATA_PATH)
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
-c1 = ax1.imshow(grid_kasar, cmap='magma')
-ax1.set_title("ERA5 Klasik (Resolusi 31km)
-Sangat Kasar, UHI Tersembunyi", fontsize=10)
-plt.colorbar(c1, ax=ax1, fraction=0.046, pad=0.04)
+# Fusi: ERA5 tp (m) vs BMKG RR (mm)
+if 'tp' in df.columns and 'RR' in df.columns:
+    df['tp_mm'] = df['tp'] * 1000
 
-c2 = ax2.imshow(grid_halus, cmap='magma', interpolation='bicubic')
-ax2.set_title("ERA5-Land Hibrida (Resolusi 9km)
-Deteksi Iklim Mikro / UHI Sangat Jelas", fontsize=10)
-plt.colorbar(c2, ax=ax2, fraction=0.046, pad=0.04)
+    plt.figure(figsize=(8, 8))
+    sns.regplot(data=df, x='tp_mm', y='RR', scatter_kws={'alpha':0.3, 'color':'royalblue'}, line_kws={'color':'red'})
+    plt.title("Validasi Fusi Resolusi Tinggi: Satelit ERA5-Land vs Stasiun BMKG", fontsize=14, fontweight='bold')
+    plt.xlabel("Curah Hujan Prediksi Satelit ERA5-Land (mm)")
+    plt.ylabel("Curah Hujan Aktual Permukaan BMKG (mm)")
+    plt.xlim(-5, 100)
+    plt.ylim(-5, 100)
+    plt.grid(True, alpha=0.3)
+else:
+    print("Kolom tidak ditemukan untuk perbandingan.")
 
-plt.suptitle("Peningkatan Integritas Spasial via Fusi Bilinear", fontsize=14, weight='bold')
-plt.tight_layout()
 out = os.path.join(VISUAL_DIR, "Hari_04_Fusi_Resolusi.png")
+plt.tight_layout()
 plt.savefig(out, dpi=300)
 print("-> Visualisasi tersimpan di", out)

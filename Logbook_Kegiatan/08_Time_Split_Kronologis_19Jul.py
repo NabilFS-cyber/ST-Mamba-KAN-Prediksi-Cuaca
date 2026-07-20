@@ -1,31 +1,34 @@
-import os, matplotlib.pyplot as plt, numpy as np
-
+import os, pandas as pd, matplotlib.pyplot as plt
 from google.colab import drive
-try: drive.mount('/content/drive', force_remount=True)
-except Exception: pass
+
+try: 
+    drive.mount('/content/drive', force_remount=True)
+except Exception: 
+    pass
 
 VISUAL_DIR = "/content/drive/MyDrive/Riset_ERA5_Land/Logbook_Kegiatan/Visualisasi"
+B1_PATH = "/content/drive/MyDrive/Riset_ERA5_Land/clean/brankas1_pretrain.parquet"
+B2_PATH = "/content/drive/MyDrive/Riset_ERA5_Land/clean/brankas2_finetune.parquet"
 os.makedirs(VISUAL_DIR, exist_ok=True)
 
-print("Pemotongan Data (Time-Split) Bebas Kebocoran")
-# Buat data kronologis 2016 - 2026
-years = np.arange(2016, 2026.1, 0.1)
-data_volume = np.ones_like(years) * 100
+df1 = pd.read_parquet(B1_PATH)
+df2 = pd.read_parquet(B2_PATH)
 
-plt.figure(figsize=(10, 3.5))
-# Latih (2016 - 2023)
-plt.fill_between(years, 0, data_volume, where=(years < 2024), color='forestgreen', alpha=0.7, label='Data Latih (70%) - 2016 s/d 2023')
-# Validasi (2024)
-plt.fill_between(years, 0, data_volume, where=(years >= 2024) & (years < 2025), color='gold', alpha=0.8, label='Data Validasi (15%) - 2024')
-# Ujian (2025)
-plt.fill_between(years, 0, data_volume, where=(years >= 2025), color='crimson', alpha=0.8, label='Data Ujian Blind-Test (15%) - 2025')
+df1['DATE'] = pd.to_datetime(df1['DATE'])
+df2['DATE'] = pd.to_datetime(df2['DATE'])
 
-plt.title("Pemotongan Linimasa Absolut (Mencegah Kebocoran Autokorelasi Cuaca)", fontsize=12)
-plt.xlabel("Tahun Observasi", fontsize=11)
+plt.figure(figsize=(12, 4))
+plt.plot([df1['DATE'].min(), df1['DATE'].max()], [1, 1], linewidth=30, color='royalblue', label='Brankas 1 (Pre-Training Masa Lalu)')
+plt.plot([df2['DATE'].min(), df2['DATE'].max()], [1.2, 1.2], linewidth=30, color='darkorange', label='Brankas 2 (Fine-Tuning & Blind Test)')
+
+plt.title("Pemotongan Waktu Kronologis (Mencegah Data Leakage)", fontsize=14, fontweight='bold', pad=15)
 plt.yticks([])
-plt.xticks(np.arange(2016, 2027, 1))
-plt.legend(loc='upper left')
+plt.xlabel("Tahun")
+plt.ylim(0.5, 1.7)
+plt.legend(loc='lower center', ncol=2)
+plt.grid(True, alpha=0.3, axis='x')
+
+out = os.path.join(VISUAL_DIR, "Hari_08_Time_Split_Kronologis.png")
 plt.tight_layout()
-out = os.path.join(VISUAL_DIR, "Hari_08_Time_Split.png")
 plt.savefig(out, dpi=300)
 print("-> Visualisasi tersimpan di", out)

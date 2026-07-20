@@ -1,31 +1,33 @@
-import os, matplotlib.pyplot as plt, numpy as np
-
+import os, pandas as pd, numpy as np, matplotlib.pyplot as plt, seaborn as sns
 from google.colab import drive
-try: drive.mount('/content/drive', force_remount=True)
-except Exception: pass
+
+try: 
+    drive.mount('/content/drive', force_remount=True)
+except Exception: 
+    pass
 
 VISUAL_DIR = "/content/drive/MyDrive/Riset_ERA5_Land/Logbook_Kegiatan/Visualisasi"
+B1_PATH = "/content/drive/MyDrive/Riset_ERA5_Land/clean/brankas1_pretrain.parquet"
 os.makedirs(VISUAL_DIR, exist_ok=True)
 
-print("Perakitan Tensor Sliding Window 14 Hari")
-t = np.arange(1, 21)
-hujan = np.sin(t * 0.4) * 20 + 25 + np.random.randn(20) * 5
+df = pd.read_parquet(B1_PATH)
+# Sortir berdasarkan waktu
+df_stat = df[df['STATION'] == df['STATION'].iloc[0]].sort_values('DATE').head(25)
 
-plt.figure(figsize=(10, 5))
-plt.plot(t, hujan, marker='o', color='lightgray', linestyle='--', label='Deret Historis')
-plt.plot(t[2:16], hujan[2:16], marker='o', color='mediumblue', linewidth=3, label='Memori Look-back (14 Hari / 336 Jam)')
-plt.scatter(t[16], hujan[16], color='red', s=200, edgecolors='black', zorder=5, label='Target Prediksi (H+1)')
+# Buat sliding window
+windows = []
+for i in range(10):
+    windows.append(df_stat['tp'].values[i:i+14])
+    
+matrix = np.array(windows)
 
-# Annotations
-plt.axvspan(3, 16, color='blue', alpha=0.1)
-plt.axvline(17, color='red', linestyle=':', alpha=0.5)
-plt.title("Desain Arsitektur Tensor Sliding Window ST-Mamba", fontsize=13)
-plt.xlabel("Indeks Waktu Berjalan (Harian)", fontsize=11)
-plt.ylabel("Intensitas Curah Hujan (mm)", fontsize=11)
-plt.xticks(t)
-plt.legend(loc='upper left')
-plt.grid(True, linestyle='--', alpha=0.5)
+plt.figure(figsize=(12, 5))
+sns.heatmap(matrix, annot=True, fmt=".3f", cmap="YlGnBu", cbar_kws={'label': 'Intensitas Cuaca (tp)'})
+plt.title("Arsitektur Memori Sliding Window (14-Hari Look-back) Tensor", fontsize=14, fontweight='bold', pad=15)
+plt.xlabel("Langkah Waktu Historis (T-13 sampai T-0)")
+plt.ylabel("Sampel Array (Hari ke-i)")
+
+out = os.path.join(VISUAL_DIR, "Hari_07_Sliding_Window_Tensor.png")
 plt.tight_layout()
-out = os.path.join(VISUAL_DIR, "Hari_07_Sliding_Window.png")
 plt.savefig(out, dpi=300)
 print("-> Visualisasi tersimpan di", out)
