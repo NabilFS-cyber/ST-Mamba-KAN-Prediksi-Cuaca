@@ -3,7 +3,7 @@
 # =====================================================================
 # Script ini menjalankan simulasi perbandingan dinamis curah hujan
 # menggunakan 2-Panel Dashboard: Time-Series Bergerak (Kiri) dan 
-# Live Leaderboard Akurasi RMSE (Kanan).
+# Live Leaderboard Akurasi RMSE & MAE (Kanan).
 # Hasil simulasi secara otomatis dirakit menjadi berkas animas .GIF
 # dan disimpan langsung ke Google Drive Anda!
 # =====================================================================
@@ -231,14 +231,17 @@ for current_idx in range(window_size, max_sim_days, sim_step):
     end_idx = current_idx
     x_axis = np.arange(start_idx, end_idx)
     
-    # Hitung Akurasi RMSE Kumulatif
-    running_rmse = {}
+    # Hitung Akurasi RMSE & MAE Kumulatif (Double Evaluation Metrics)
+    running_metrics = {}
     for name in models.keys():
         y_true = yr_test[:end_idx]
         y_pred = preds[name][:end_idx]
-        running_rmse[name] = np.sqrt(np.mean((y_true - y_pred)**2))
+        rmse = np.sqrt(np.mean((y_true - y_pred)**2))
+        mae = np.mean(np.abs(y_true - y_pred))
+        running_metrics[name] = {'RMSE': rmse, 'MAE': mae}
         
-    sorted_leaderboard = sorted(running_rmse.items(), key=lambda item: item[1])
+    # Urutkan peringkat model berdasarkan RMSE terkecil
+    sorted_leaderboard = sorted(running_metrics.items(), key=lambda item: item[1]['RMSE'])
     winner_model = sorted_leaderboard[0][0]
     
     # Plotting
@@ -274,22 +277,26 @@ for current_idx in range(window_size, max_sim_days, sim_step):
     axes[0].legend(loc='upper left', frameon=True, shadow=True, facecolor='white')
     axes[0].grid(True, alpha=0.15)
     
-    # PANEL KANAN: Live Leaderboard
+    # PANEL KANAN: Live Leaderboard (Menampilkan RMSE & MAE Berpasangan)
     names_sorted = [item[0] for item in sorted_leaderboard]
-    rmse_values = [item[1] for item in sorted_leaderboard]
+    rmse_values = [item[1]['RMSE'] for item in sorted_leaderboard]
+    mae_values = [item[1]['MAE'] for item in sorted_leaderboard]
     colors = ['gold' if n == winner_model else '#9fbcdb' for n in names_sorted]
     
     bars = axes[1].barh(names_sorted, rmse_values, color=colors, edgecolor='black', height=0.6)
     axes[1].invert_yaxis()
     
-    for bar in bars:
-        width = bar.get_width()
-        axes[1].text(width + 0.2, bar.get_y() + bar.get_height()/2, f'{width:.3f} mm', 
-                     va='center', ha='left', fontsize=11, fontweight='bold')
+    # Tampilkan skor RMSE dan MAE di samping Bar
+    for idx, bar in enumerate(bars):
+        rmse_val = rmse_values[idx]
+        mae_val = mae_values[idx]
+        axes[1].text(rmse_val + 0.2, bar.get_y() + bar.get_height()/2, 
+                     f'RMSE: {rmse_val:.2f} | MAE: {mae_val:.2f} mm', 
+                     va='center', ha='left', fontsize=10, fontweight='bold')
                      
-    axes[1].set_title("🏆 LIVE LEADERBOARD\n(Cumulative RMSE Terkecil)", fontsize=13, fontweight='bold', color='navy')
-    axes[1].set_xlabel("RMSE (Makin Kecil Makin Presisi)", fontsize=11)
-    axes[1].set_xlim(0, max(rmse_values) + 3)
+    axes[1].set_title("🏆 LIVE LEADERBOARD\n(Akurasi RMSE & MAE Kumulatif)", fontsize=13, fontweight='bold', color='navy')
+    axes[1].set_xlabel("Error RMSE (Makin Kecil Makin Presisi)", fontsize=11)
+    axes[1].set_xlim(0, max(rmse_values) + 12)  # Lebarkan batas sumbu-X untuk teks pendamping
     axes[1].grid(True, alpha=0.15, axis='x')
     
     axes[1].text(0.5, -0.6, f"👑 CURRENT WINNER:\n{winner_model}", 
@@ -307,13 +314,16 @@ for current_idx in range(window_size, max_sim_days, sim_step):
     plt.show()
     
     # Cetak konsol
-    print("="*85)
+    print("="*95)
     print(f"📡 STATISTIK OPERASIONAL LIVE MONITORING HARI KE-{end_idx}")
-    print("="*85)
-    print(f" -> Pemenang Akurasi Saat Ini       : {winner_model} (RMSE: {running_rmse[winner_model]:.3f} mm)")
+    print("="*95)
+    print(f" -> Pemenang Akurasi Saat Ini       : {winner_model}")
     print(f" -> Curah Hujan Aktual (BMKG)       : {latest_actual:.2f} mm")
     print(f" -> Prediksi ST-Mamba-KAN (Kita)    : {latest_pred:.2f} mm")
-    print("="*85)
+    print(f" -> Detail Metrik Akurasi Kumulatif :")
+    for name in names_sorted:
+        print(f"    * {name:<12} | RMSE: {running_metrics[name]['RMSE']:.3f} mm | MAE: {running_metrics[name]['MAE']:.3f} mm")
+    print("="*95)
     
     time.sleep(0.08)
 
