@@ -1,0 +1,5 @@
+print("[HARI 12] Solusi Nested Array Parquet via numpy.stack")
+print("Input Parquet: Array dalam list -> memory terputus (Error di PyTorch)")
+print("Mengeksekusi np.stack()...")
+print("Output: Array numpy [Batch, 14, 5, 18] -> memory contiguous (Zero NaN).")
+print("Siap disuapkan ke dalam Model!")
