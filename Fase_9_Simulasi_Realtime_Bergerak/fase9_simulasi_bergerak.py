@@ -1,11 +1,11 @@
 # =====================================================================
-# PHASE 9 – SIMULASI PREDIKSI REAL-TIME BERGERAK & AUTO-SAVE GIF
+# PHASE 9 – DASHBOARD EVALUASI FINAL & LEADERBOARD PRESISI (INSTANT)
 # =====================================================================
-# Script ini menjalankan simulasi perbandingan dinamis curah hujan
-# menggunakan 2-Panel Dashboard: Time-Series Bergerak (Kiri) dan 
-# Live Leaderboard Akurasi RMSE & MAE (Kanan).
-# Hasil simulasi secara otomatis dirakit menjadi berkas animas .GIF
-# dan disimpan langsung ke Google Drive Anda!
+# Script ini secara instan memproses seluruh dataset uji (tanpa loop/animasi)
+# dan langsung menyajikan hasil evaluasi final 2-Panel:
+# 1) Perbandingan Tren Curah Hujan Test Set (Kiri)
+# 2) Leaderboard Akurasi RMSE & MAE Seluruh Model (Kanan)
+# Hasil langsung disimpan sebagai berkas cetak PNG publikasi.
 # =====================================================================
 import os, time, math, warnings
 import torch
@@ -15,8 +15,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, TensorDataset
-from IPython.display import clear_output
-from PIL import Image
 
 warnings.filterwarnings('ignore')
 
@@ -155,7 +153,7 @@ class Ultimate_GAT_Mamba_KAN(nn.Module):
 # ============================================================
 # 3. MEMUAT DATA & MODEL
 # ============================================================
-print("\n🔄 Memuat Data Uji BMKG Aktual...")
+print("\n🔄 Memuat Data Uji BMKG...")
 X_test = torch.load(f'{TENSOR_ROOT}/b2_test_X_4d.pt', map_location=device, weights_only=False)
 yr_test = torch.load(f'{TENSOR_ROOT}/b2_test_yr_4d.pt', map_location=device, weights_only=False).clamp(min=0).cpu().numpy()
 
@@ -190,9 +188,9 @@ if os.path.exists(ckpt_reg_path):
     print(" ✅ Model Utama ST-Mamba-KAN Regressor siap (EMA weights)!")
 
 # ============================================================
-# 4. PRE-INFERENCE UNTUK ANIMASI YANG HALUS
+# 4. INFERENSI INSTAN (TANPA LOOP DELAY)
 # ============================================================
-print("\n⚙️ Menjalankan pra-inferensi untuk seluruh dataset...")
+print("\n⚙️ Menjalankan inferensi instan pada seluruh Test Set...")
 preds = {name: [] for name in models.keys()}
 
 with torch.no_grad():
@@ -211,146 +209,88 @@ for name in preds.keys():
     preds[name] = np.array(preds[name]).clip(min=0)
 
 # ============================================================
-# 5. SIMULASI GRAFIK BERGERAK & LIVE LEADERBOARD
+# 5. KALKULASI METRIK EVALUASI AKHIR (TOTAL TEST SET)
 # ============================================================
-print("\n🎬 Memulai Simulasi Monitoring & Perekaman Frame...")
-time.sleep(2)
+print("\n📊 Menghitung Akurasi Final RMSE & MAE...")
+final_metrics = {}
+for name in models.keys():
+    rmse = np.sqrt(np.mean((yr_test - preds[name])**2))
+    mae = np.mean(np.abs(yr_test - preds[name]))
+    final_metrics[name] = {'RMSE': rmse, 'MAE': mae}
 
-window_size = 50
-total_days = len(yr_test)
-saved_frames = []
+# Urutkan peringkat
+sorted_leaderboard = sorted(final_metrics.items(), key=lambda item: item[1]['RMSE'])
+winner_model = sorted_leaderboard[0][0]
 
-# Batasi jumlah hari untuk simulasi & hemat memori pembuatan GIF
-sim_step = 2 # lompati setiap 2 hari
-max_sim_days = min(total_days, 180) # simulasikan 180 hari pertama agar ukuran GIF optimal
+# ============================================================
+# 6. PENYAJIAN 2-PANEL DASHBOARD FINAL (STATIC & HIGH-QUALITY)
+# ============================================================
+fig, axes = plt.subplots(1, 2, figsize=(18, 7), gridspec_kw={'width_ratios': [7, 3]})
 
-for current_idx in range(window_size, max_sim_days, sim_step):
-    clear_output(wait=True)
-    
-    start_idx = current_idx - window_size
-    end_idx = current_idx
-    x_axis = np.arange(start_idx, end_idx)
-    
-    # Hitung Akurasi RMSE & MAE Kumulatif (Double Evaluation Metrics)
-    running_metrics = {}
-    for name in models.keys():
-        y_true = yr_test[:end_idx]
-        y_pred = preds[name][:end_idx]
-        rmse = np.sqrt(np.mean((y_true - y_pred)**2))
-        mae = np.mean(np.abs(y_true - y_pred))
-        running_metrics[name] = {'RMSE': rmse, 'MAE': mae}
-        
-    # Urutkan peringkat model berdasarkan RMSE terkecil
-    sorted_leaderboard = sorted(running_metrics.items(), key=lambda item: item[1]['RMSE'])
-    winner_model = sorted_leaderboard[0][0]
-    
-    # Plotting
-    fig, axes = plt.subplots(1, 2, figsize=(18, 6.5), gridspec_kw={'width_ratios': [7, 3]})
-    
-    # PANEL KIRI: Time-Series
-    axes[0].plot(x_axis, yr_test[start_idx:end_idx], color='black', label='Aktual BMKG (Ground Truth)', linewidth=3.0, marker='o', markersize=4, zorder=5)
-    axes[0].plot(x_axis, preds['ST-Mamba-KAN'][start_idx:end_idx], color='crimson', label='Prediksi ST-Mamba-KAN (Model Kita)', linewidth=2.5, zorder=6)
-    axes[0].plot(x_axis, preds['CNN-LSTM'][start_idx:end_idx], color='royalblue', label='Baseline CNN-LSTM', alpha=0.4, linestyle='--')
-    axes[0].plot(x_axis, preds['CNN-GRU'][start_idx:end_idx], color='darkorange', label='Baseline CNN-GRU', alpha=0.4, linestyle='--')
-    axes[0].plot(x_axis, preds['ST-Mamba-MLP'][start_idx:end_idx], color='purple', label='Baseline ST-Mamba-MLP', alpha=0.4, linestyle='--')
-    
-    axes[0].axhline(50, color='red', linestyle=':', alpha=0.8, linewidth=2, label='Batas Bahaya Siaga (50 mm)')
-    
-    latest_actual = yr_test[end_idx-1]
-    latest_pred = preds['ST-Mamba-KAN'][end_idx-1]
-    
-    if latest_actual >= 50 or latest_pred >= 50:
-        alert_status = "🚨 SIAGA EKSTREM: POTENSI BANJIR JABODETABEK 🚨"
-        alert_color = 'red'
-    elif latest_actual >= 20 or latest_pred >= 20:
-        alert_status = "⚠️ WASPADA: HUJAN SEDANG HINGGA LEBAT ⚠️"
-        alert_color = 'orange'
-    else:
-        alert_status = "🟢 AMAN: KONDISI CUACA NORMAL 🟢"
-        alert_color = 'green'
-        
-    axes[0].set_title(f"Visualisasi Live Curah Hujan (Hari ke-{end_idx}/{total_days})\nStatus: {alert_status}", 
-                      fontsize=13, fontweight='bold', color=alert_color)
-    axes[0].set_xlabel("Langkah Hari Pengamatan (Test Set)", fontsize=11)
-    axes[0].set_ylabel("Curah Hujan (mm / Hari)", fontsize=11)
-    axes[0].set_ylim(-5, max(yr_test.max(), preds['ST-Mamba-KAN'].max()) + 15)
-    axes[0].legend(loc='upper left', frameon=True, shadow=True, facecolor='white')
-    axes[0].grid(True, alpha=0.15)
-    
-    # PANEL KANAN: Live Leaderboard (Menampilkan RMSE & MAE Berpasangan)
-    names_sorted = [item[0] for item in sorted_leaderboard]
-    rmse_values = [item[1]['RMSE'] for item in sorted_leaderboard]
-    mae_values = [item[1]['MAE'] for item in sorted_leaderboard]
-    colors = ['gold' if n == winner_model else '#9fbcdb' for n in names_sorted]
-    
-    bars = axes[1].barh(names_sorted, rmse_values, color=colors, edgecolor='black', height=0.6)
-    axes[1].invert_yaxis()
-    
-    # Tampilkan skor RMSE dan MAE di samping Bar
-    for idx, bar in enumerate(bars):
-        rmse_val = rmse_values[idx]
-        mae_val = mae_values[idx]
-        axes[1].text(rmse_val + 0.2, bar.get_y() + bar.get_height()/2, 
-                     f'RMSE: {rmse_val:.2f} | MAE: {mae_val:.2f} mm', 
-                     va='center', ha='left', fontsize=10, fontweight='bold')
-                     
-    axes[1].set_title("🏆 LIVE LEADERBOARD\n(Akurasi RMSE & MAE Kumulatif)", fontsize=13, fontweight='bold', color='navy')
-    axes[1].set_xlabel("Error RMSE (Makin Kecil Makin Presisi)", fontsize=11)
-    axes[1].set_xlim(0, max(rmse_values) + 12)  # Lebarkan batas sumbu-X untuk teks pendamping
-    axes[1].grid(True, alpha=0.15, axis='x')
-    
-    axes[1].text(0.5, -0.6, f"👑 CURRENT WINNER:\n{winner_model}", 
-                 fontsize=12, color='darkgoldenrod', weight='bold', 
-                 ha='center', va='center', transform=axes[1].transData,
-                 bbox=dict(facecolor='#fffde6', edgecolor='gold', boxstyle='round,pad=0.5'))
+# --- PANEL KIRI: Visualisasi Tren Hujan Akhir (100 Hari Terakhir) ---
+# Menampilkan 100 hari terakhir dari test set agar grafik bersih dan tidak terlalu padat
+plot_days = min(100, len(yr_test))
+x_axis = np.arange(len(yr_test) - plot_days, len(yr_test))
+
+axes[0].plot(x_axis, yr_test[-plot_days:], color='black', label='Aktual BMKG (Ground Truth)', linewidth=3.0, marker='o', markersize=4, zorder=5)
+axes[0].plot(x_axis, preds['ST-Mamba-KAN'][-plot_days:], color='crimson', label='Prediksi ST-Mamba-KAN (Model Kita)', linewidth=2.5, zorder=6)
+axes[0].plot(x_axis, preds['CNN-LSTM'][-plot_days:], color='royalblue', label='Baseline CNN-LSTM', alpha=0.4, linestyle='--')
+axes[0].plot(x_axis, preds['CNN-GRU'][-plot_days:], color='darkorange', label='Baseline CNN-GRU', alpha=0.4, linestyle='--')
+axes[0].plot(x_axis, preds['ST-Mamba-MLP'][-plot_days:], color='purple', label='Baseline ST-Mamba-MLP', alpha=0.4, linestyle='--')
+
+axes[0].axhline(50, color='red', linestyle=':', alpha=0.8, linewidth=2, label='Batas Bahaya Siaga (50 mm)')
+
+axes[0].set_title(f"Tren Curah Hujan Aktual vs Prediksi Model (Sampel 100 Hari Terakhir)", fontsize=13, fontweight='bold', color='black')
+axes[0].set_xlabel("Hari Pengamatan (Test Set)", fontsize=11)
+axes[0].set_ylabel("Curah Hujan (mm / Hari)", fontsize=11)
+axes[0].set_ylim(-5, max(yr_test[-plot_days:].max(), preds['ST-Mamba-KAN'][-plot_days:].max()) + 15)
+axes[0].legend(loc='upper left', frameon=True, shadow=True, facecolor='white')
+axes[0].grid(True, alpha=0.15)
+
+# --- PANEL KANAN: Leaderboard Akurasi Seluruh Model ---
+names_sorted = [item[0] for item in sorted_leaderboard]
+rmse_values = [item[1]['RMSE'] for item in sorted_leaderboard]
+mae_values = [item[1]['MAE'] for item in sorted_leaderboard]
+colors = ['gold' if n == winner_model else '#9fbcdb' for n in names_sorted]
+
+bars = axes[1].barh(names_sorted, rmse_values, color=colors, edgecolor='black', height=0.6)
+axes[1].invert_yaxis()
+
+for idx, bar in enumerate(bars):
+    rmse_val = rmse_values[idx]
+    mae_val = mae_values[idx]
+    axes[1].text(rmse_val + 0.2, bar.get_y() + bar.get_height()/2, 
+                 f'RMSE: {rmse_val:.2f} | MAE: {mae_val:.2f} mm', 
+                 va='center', ha='left', fontsize=10.5, fontweight='bold')
                  
-    plt.tight_layout()
-    
-    # Simpan Frame Sementara untuk perakitan GIF
-    frame_path = f"/tmp/frame_{current_idx}.png"
-    plt.savefig(frame_path, dpi=120)  # DPI 120 agar ukuran GIF efisien
-    saved_frames.append(frame_path)
-    
-    plt.show()
-    
-    # Cetak konsol
-    print("="*95)
-    print(f"📡 STATISTIK OPERASIONAL LIVE MONITORING HARI KE-{end_idx}")
-    print("="*95)
-    print(f" -> Pemenang Akurasi Saat Ini       : {winner_model}")
-    print(f" -> Curah Hujan Aktual (BMKG)       : {latest_actual:.2f} mm")
-    print(f" -> Prediksi ST-Mamba-KAN (Kita)    : {latest_pred:.2f} mm")
-    print(f" -> Detail Metrik Akurasi Kumulatif :")
-    for name in names_sorted:
-        print(f"    * {name:<12} | RMSE: {running_metrics[name]['RMSE']:.3f} mm | MAE: {running_metrics[name]['MAE']:.3f} mm")
-    print("="*95)
-    
-    time.sleep(0.08)
+axes[1].set_title("🏆 LEADERBOARD EVALUASI FINAL\n(RMSE & MAE Terkecil = Terbaik)", fontsize=13, fontweight='bold', color='navy')
+axes[1].set_xlabel("RMSE Error (Makin Kecil Makin Presisi)", fontsize=11)
+axes[1].set_xlim(0, max(rmse_values) + 12)
+axes[1].grid(True, alpha=0.15, axis='x')
+
+# Tambahkan label pemenang dengan Mahkota
+axes[1].text(0.5, -0.6, f"👑 WINNER MODEL:\n{winner_model}", 
+             fontsize=13, color='darkgoldenrod', weight='bold', 
+             ha='center', va='center', transform=axes[1].transData,
+             bbox=dict(facecolor='#fffde6', edgecolor='gold', boxstyle='round,pad=0.6'))
+
+plt.tight_layout()
+
+# Simpan sebagai file PNG berkualitas tinggi
+print("\n💾 Menyimpan berkas visualisasi final ke Google Drive...")
+final_img_path = os.path.join(VISUAL_DIR, "Hari_10_Final_Evaluation_Leaderboard.png")
+plt.savefig(final_img_path, dpi=300)
+plt.show()
 
 # ============================================================
-# 6. RAKIT FRAME MENJADI ANIMASI .GIF & SAVE TO DRIVE
+# 7. CETAK TABEL METRIK FINAL DI KONSOL
 # ============================================================
-print("\n📦 Merakit frame simulasi menjadi animasi .GIF...")
-try:
-    images = [Image.open(f) for f in saved_frames]
-    gif_out_path = os.path.join(VISUAL_DIR, "Hari_10_Simulasi_Prediction_Live.gif")
-    
-    # Simpan sebagai GIF berulang (loop=0)
-    images[0].save(
-        gif_out_path,
-        save_all=True,
-        append_images=images[1:],
-        duration=120,  # Durasi transisi frame (ms)
-        loop=0
-    )
-    print(f"\n🎉 SUKSES TOTAL!")
-    print(f" -> Animasi tersimpan di: {gif_out_path}")
-    print(" -> File ini bisa langsung Anda pasang di PPT atau Laporan Akhir Anda!")
-    
-    # Bersihkan file sampah di /tmp/
-    for f in saved_frames:
-        if os.path.exists(f):
-            os.remove(f)
-            
-except Exception as e:
-    print(f" ❌ Gagal merakit GIF: {e}")
+print("\n" + "="*85)
+print(f"🏆 HASIL EVALUASI AKHIR & PERINGKAT MODEL (DEFINITIF)")
+print("="*85)
+for rank, (name, metrics) in enumerate(sorted_leaderboard, 1):
+    medal = "🥇 [WINNER]" if rank == 1 else f"🥈 [Rank {rank}]" if rank == 2 else f"🥉 [Rank {rank}]"
+    print(f" {medal:<12} | Model: {name:<13} | RMSE: {metrics['RMSE']:.3f} mm | MAE: {metrics['MAE']:.3f} mm")
+print("="*85)
+print(f"-> Gambar cetak resolusi tinggi disimpan di: {final_img_path}")
+print("="*85)
