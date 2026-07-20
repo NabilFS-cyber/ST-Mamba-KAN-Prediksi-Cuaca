@@ -215,14 +215,15 @@ for name in preds.keys():
 print("\n🎬 Memulai Jalannya Simulasi Cepat (Snappy Animation)...")
 time.sleep(1.5)
 
-window_size = 80  # Jendela sedikit diperlebar agar visualisasi historis lebih dramatis
+window_size = 80  
 total_days = len(yr_test)
 saved_frames = []
 
-# Tentukan range simulasi: Menggunakan 250 hari agar durasi video/animasi lebih panjang dan menarik
-sim_start = max(window_size, total_days - 250)
+# Range simulasi dipersempit menjadi 150 hari dengan langkah besar (step=10)
+# Ini menghasilkan 15 frame, berjalan instan (< 5 detik) di Colab dan sangat lancar.
+sim_start = max(window_size, total_days - 150)
 sim_end = total_days
-sim_step = 5 # langkah per 5 hari agar animasi cepat selesai namun berdurasi pas
+sim_step = 10
 
 for current_idx in range(sim_start, sim_end, sim_step):
     clear_output(wait=True)
@@ -276,7 +277,7 @@ for current_idx in range(sim_start, sim_end, sim_step):
     axes[0].legend(loc='upper left', frameon=True, shadow=True, facecolor='white')
     axes[0].grid(True, alpha=0.15)
     
-    # PANEL KANAN: Live Leaderboard (Zoomed-In Axis untuk memperlihatkan keunggulan jauh model KAN)
+    # PANEL KANAN: Live Leaderboard
     names_sorted = [item[0] for item in sorted_leaderboard]
     rmse_values = [item[1]['RMSE'] for item in sorted_leaderboard]
     mae_values = [item[1]['MAE'] for item in sorted_leaderboard]
@@ -285,7 +286,7 @@ for current_idx in range(sim_start, sim_end, sim_step):
     bars = axes[1].barh(names_sorted, rmse_values, color=colors, edgecolor='black', height=0.6)
     axes[1].invert_yaxis()
     
-    # Menyetel xlim dinamis agar perbedaan bar terlihat jomplang (Memperbesar visualisasi pembeda)
+    # Menyetel xlim dinamis pada leaderboard
     min_x = math.floor(min(rmse_values)) - 2
     max_x = math.ceil(max(rmse_values)) + 1
     axes[1].set_xlim(min_x, max_x)
@@ -301,10 +302,11 @@ for current_idx in range(sim_start, sim_end, sim_step):
     axes[1].set_xlabel("RMSE Error (Makin Kecil Makin Presisi)", fontsize=11)
     axes[1].grid(True, alpha=0.15, axis='x')
     
-    axes[1].text(min_x + (max_x - min_x)/2, -0.6, f"👑 CURRENT WINNER:\n{winner_model}", 
-                 fontsize=12, color='darkgoldenrod', weight='bold', 
+    # FIX TUMPANG TINDIH: Pindahkan box Winner ke bagian bawah chart (y=3.7) agar tidak menabrak judul atas
+    axes[1].text(min_x + (max_x - min_x)/2, 3.7, f"👑 CURRENT WINNER:\n{winner_model}", 
+                 fontsize=11, color='darkgoldenrod', weight='bold', 
                  ha='center', va='center', transform=axes[1].transData,
-                 bbox=dict(facecolor='#fffde6', edgecolor='gold', boxstyle='round,pad=0.5'))
+                 bbox=dict(facecolor='#fffde6', edgecolor='gold', boxstyle='round,pad=0.4'))
                  
     plt.tight_layout()
     
@@ -314,16 +316,7 @@ for current_idx in range(sim_start, sim_end, sim_step):
     
     plt.show()
     
-    # Cetak konsol
-    print("="*95)
-    print(f"📡 STATISTIK OPERASIONAL LIVE MONITORING HARI KE-{end_idx}")
-    print("="*95)
-    print(f" -> Pemenang Akurasi Saat Ini       : {winner_model}")
-    print(f" -> Curah Hujan Aktual (BMKG)       : {latest_actual:.2f} mm")
-    print(f" -> Prediksi ST-Mamba-KAN (Kita)    : {latest_pred:.2f} mm")
-    print("="*95)
-    
-    time.sleep(0.04)  # Animasi dipercepat untuk efisiensi loading
+    time.sleep(0.02)  # Delay minimal agar transisi instan
 
 # ============================================================
 # 6. FRAME FINAL (STAY & DISKUSI FINAL)
@@ -369,7 +362,7 @@ colors = ['gold' if n == winner_model else '#9fbcdb' for n in names_sorted]
 bars = axes[1].barh(names_sorted, rmse_values, color=colors, edgecolor='black', height=0.6)
 axes[1].invert_yaxis()
 
-# Menyetel xlim dinamis pada frame final agar perbedaan bar terlihat sangat signifikan (pembuktian visual)
+# Menyetel xlim dinamis pada frame final agar perbedaan bar terlihat sangat signifikan
 min_xf = math.floor(min(rmse_values)) - 2
 max_xf = math.ceil(max(rmse_values)) + 1
 axes[1].set_xlim(min_xf, max_xf)
@@ -385,10 +378,11 @@ axes[1].set_title("🏆 LEADERBOARD EVALUASI FINAL\n(RMSE & MAE Terkecil = Terba
 axes[1].set_xlabel("RMSE Error (Makin Kecil Makin Presisi)", fontsize=11)
 axes[1].grid(True, alpha=0.15, axis='x')
 
-axes[1].text(min_xf + (max_xf - min_xf)/2, -0.6, f"👑 WINNER MODEL:\n{winner_model}", 
-             fontsize=13, color='darkgoldenrod', weight='bold', 
+# FIX TUMPANG TINDIH: Box Pemenang dipasang di bawah chart (y=3.7)
+axes[1].text(min_xf + (max_xf - min_xf)/2, 3.7, f"👑 WINNER MODEL:\n{winner_model}", 
+             fontsize=12, color='darkgoldenrod', weight='bold', 
              ha='center', va='center', transform=axes[1].transData,
-             bbox=dict(facecolor='#fffde6', edgecolor='gold', boxstyle='round,pad=0.6'))
+             bbox=dict(facecolor='#fffde6', edgecolor='gold', boxstyle='round,pad=0.5'))
 
 plt.tight_layout()
 
@@ -408,7 +402,7 @@ print("="*95)
 print(f"-> Gambar ringkasan final disimpan di: {final_img_path}")
 print("="*95)
 
-# Simpan Frame Final sebagai bagian dari GIF, beri nama /tmp/frame_final.png
+# Simpan Frame Final sebagai bagian dari GIF
 final_frame_path = "/tmp/frame_final.png"
 plt.savefig(final_frame_path, dpi=120)
 saved_frames.append(final_frame_path)
@@ -421,8 +415,8 @@ try:
     images = [Image.open(f) for f in saved_frames]
     gif_out_path = os.path.join(VISUAL_DIR, "Hari_10_Simulasi_Prediction_Live.gif")
     
-    # Konfigurasi durasi: frame simulasi 100ms, frame final ditahan 5 detik (5000ms)
-    durations = [100] * (len(images) - 1) + [5000]
+    # Konfigurasi durasi: frame simulasi 80ms (lebih cepat), frame final ditahan 5 detik (5000ms)
+    durations = [80] * (len(images) - 1) + [5000]
     
     images[0].save(
         gif_out_path,
