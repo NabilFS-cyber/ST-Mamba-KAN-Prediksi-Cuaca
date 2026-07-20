@@ -197,7 +197,10 @@ with torch.no_grad():
         x_batch = x_batch.to(device)
         for name, model in models.items():
             out = model(x_batch)
-            # exmp1 jika model dilatih dalam log1p
+            # Jika model mengembalikan tuple (reg, cls), ambil reg-nya saja (indeks 0)
+            if isinstance(out, tuple):
+                out = out[0]
+            # expm1 jika model dilatih dalam log1p
             pred_val = torch.expm1(out).cpu().numpy()
             preds[name].extend(pred_val)
 
