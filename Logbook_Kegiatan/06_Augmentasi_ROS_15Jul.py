@@ -36,7 +36,7 @@ axes[1].set_xticks([0, 1])
 axes[1].set_xticklabels(['Aman (<50mm)', 'Siaga (>=50mm)'])
 axes[1].set_ylabel('')
 
-plt.suptitle("Penanganan Imbalance Data Hujan Ekstrem Menggunakan ROS", fontsize=14, fontweight='bold', pad=15)
+plt.suptitle("Penanganan Imbalance Data Hujan Ekstrem Menggunakan ROS", fontsize=14, fontweight='bold', y=0.98)
 
 out = os.path.join(VISUAL_DIR, "Hari_06_Augmentasi_ROS.png")
 plt.tight_layout()
