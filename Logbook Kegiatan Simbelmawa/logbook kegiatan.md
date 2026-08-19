@@ -189,7 +189,7 @@ Melaksanakan kegiatan integrasi Graph Attention Network (GAT) ke dalam arsitektu
 **Uraian Kegiatan:**
 Melanjutkan keberhasilan integrasi modul GAT di lapisan awal, kegiatan difokuskan pada perakitan dan penjalanan inti arsitektur yang memadukan blok GAT, Selective State Space Model (Mamba S6), dan Kolmogorov-Arnold Network (KAN). Hasil pengujian komputasi awal mengonfirmasi bahwa penggabungan arsitektur State-of-the-Art ini sanggup mengekstraksi dependensi temporal historis serta memodelkan fungsi non-linear data cuaca dengan latensi feed-forward yang sangat efisien, sehingga arsitektur ini dinilai siap untuk tahapan penerapan Multi-Task Learning.
 
-- **Persen Capaian:** 47%
+- **Persen Capaian:** 46%
 - **Waktu Kegiatan:** 100 Menit
 
 ## 29-07-2026
