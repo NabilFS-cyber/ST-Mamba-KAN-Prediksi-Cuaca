@@ -195,10 +195,18 @@ Melanjutkan keberhasilan integrasi modul GAT di lapisan awal, kegiatan difokuska
 ## 29-07-2026
 
 **Uraian Kegiatan:**
-Melaksanakan kegiatan kunjungan lapangan ke BMKG Pusat untuk melakukan koordinasi dan observasi terkait pengumpulan data iklim. Selain itu, pada hari yang sama juga Melaksanakan konsultasi bersama dosen pendamping dan anggota tim guna melaporkan keberhasilan perakitan arsitektur inti GAT-Mamba-KAN. Hasil yang diperoleh berupa arahan teknis dari dosen mengenai strategi penerapan Multi-Task Learning dan metrik evaluasi yang tepat untuk mengoptimalkan luaran regresi dan klasifikasi secara bersamaan.
+Melaksanakan kegiatan kunjungan lapangan ke BMKG Pusat untuk mengeksplorasi alur operasional prakiraan cuaca, memvalidasi karakteristik dinamika pergerakan awan di Jabodetabek, serta berdiskusi dengan pakar terkait kendala ketimpangan data historis dan penanganan *spectral bias* di lapangan.
 
 - **Persen Capaian:** 48%
-- **Waktu Kegiatan:**  240 Menit
+- **Waktu Kegiatan:** 300 Menit
+
+## 30-07-2026
+
+**Uraian Kegiatan:**
+Melaksanakan konsultasi bersama dosen pendamping dan anggota tim guna melaporkan keberhasilan perakitan arsitektur inti GAT-Mamba-KAN. Hasil yang diperoleh berupa arahan teknis dari dosen mengenai strategi penerapan Multi-Task Learning dan metrik evaluasi yang tepat untuk mengoptimalkan luaran regresi dan klasifikasi secara bersamaan.
+
+- **Persen Capaian:** 48%
+- **Waktu Kegiatan:** 60 Menit
 
 ## 31-07-2026
 
@@ -227,10 +235,18 @@ Berbekal konfigurasi dual-head multi-task learning yang sinkron, pelatihan kompr
 ## 04-08-2026
 
 **Uraian Kegiatan:**
-Melaksanakan kunjungan lapangan ke BPBD DKI Jakarta sekaligus melakukan pengukuran drainase sungai guna memahami kapasitas hidrologi wilayah secara faktual. Setelah itu, dilanjutkan dengan Melaksanakan konsultasi lanjutan bersama dosen pendamping dan anggota tim pasca penyelesaian 300 iterasi pelatihan model. Melaporkan pencapaian nilai RMSE terendah (17.07 mm) dan menerima masukan berharga mengenai rancangan konseptual Dashboard Evaluasi yang informatif dan representatif untuk pengujian selanjutnya.
+Melaksanakan kunjungan lapangan ke BPBD DKI Jakarta sekaligus melakukan pengukuran kapasitas drainase sungai secara langsung. Kegiatan ini difokuskan pada validasi format peringatan dini yang ideal, penentuan waktu evakuasi (*lead time*) yang optimal, serta analisis dampak luapan air secara faktual.
 
 - **Persen Capaian:** 52%
-- **Waktu Kegiatan:**  300 Menit
+- **Waktu Kegiatan:** 300 Menit
+
+## 05-08-2026
+
+**Uraian Kegiatan:**
+Melaksanakan konsultasi lanjutan bersama dosen pendamping dan anggota tim pasca penyelesaian 300 iterasi pelatihan model. Melaporkan pencapaian nilai RMSE terendah (17.07 mm) dan menerima masukan berharga mengenai rancangan konseptual Dashboard Evaluasi yang informatif dan representatif untuk pengujian selanjutnya.
+
+- **Persen Capaian:** 53%
+- **Waktu Kegiatan:** 60 Menit
 
 ## 06-08-2026
 
