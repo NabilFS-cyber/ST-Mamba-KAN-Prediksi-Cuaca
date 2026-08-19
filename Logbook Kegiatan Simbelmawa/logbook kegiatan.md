@@ -197,7 +197,7 @@ Melanjutkan keberhasilan integrasi modul GAT di lapisan awal, kegiatan difokuska
 **Uraian Kegiatan:**
 Melaksanakan kegiatan kunjungan lapangan ke BMKG Pusat untuk mengeksplorasi alur operasional prakiraan cuaca, memvalidasi karakteristik dinamika pergerakan awan di Jabodetabek, serta berdiskusi dengan pakar terkait kendala ketimpangan data historis dan penanganan *spectral bias* di lapangan.
 
-- **Persen Capaian:** 48%
+- **Persen Capaian:** 47%
 - **Waktu Kegiatan:** 300 Menit
 
 ## 30-07-2026
@@ -206,7 +206,7 @@ Melaksanakan kegiatan kunjungan lapangan ke BMKG Pusat untuk mengeksplorasi alur
 Melaksanakan konsultasi bersama dosen pendamping dan anggota tim guna melaporkan keberhasilan perakitan arsitektur inti GAT-Mamba-KAN. Hasil yang diperoleh berupa arahan teknis dari dosen mengenai strategi penerapan Multi-Task Learning dan metrik evaluasi yang tepat untuk mengoptimalkan luaran regresi dan klasifikasi secara bersamaan.
 
 - **Persen Capaian:** 48%
-- **Waktu Kegiatan:** 60 Menit
+- **Waktu Kegiatan:** 45 Menit
 
 ## 31-07-2026
 
