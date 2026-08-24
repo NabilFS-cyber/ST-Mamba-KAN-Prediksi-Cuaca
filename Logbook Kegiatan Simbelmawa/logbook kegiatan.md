@@ -360,6 +360,14 @@ Lanjutan Pembuatan Dashboard: Melakukan integrasi backend antara model AI dan an
 - **Persen Capaian:** 72%
 - **Waktu Kegiatan:** 180 Menit
 
+## 25-08-2026
+
+**Uraian Kegiatan:**
+Melaksanakan bimbingan dan konsultasi secara luring (offline) bersama dosen pendamping di lingkungan kampus Universitas Jenderal Achmad Yani untuk mereviu draf Laporan Kemajuan Bab 3 serta mengevaluasi rancangan awal arsitektur backend pada Dashboard. Dosen memberikan persetujuan dan arahan teknis untuk melanjutkan ke tahap penulisan Bab 4.
+
+- **Persen Capaian:** 73%
+- **Waktu Kegiatan:** 60 Menit
+
 ## 26-08-2026
 
 **Uraian Kegiatan:**
@@ -367,6 +375,14 @@ Lanjutan Laporan Kemajuan: Penulisan Bab 4 (Hasil yang Dicapai). Merangkum temua
 
 - **Persen Capaian:** 74%
 - **Waktu Kegiatan:** 150 Menit
+
+## 28-08-2026
+
+**Uraian Kegiatan:**
+Melaksanakan koordinasi dan bimbingan secara daring (online) melalui platform telekonferensi bersama dosen pendamping untuk meninjau persiapan konten publikasi hasil PKM yang akan diunggah ke media sosial, serta memastikan keselarasan narasi visual dengan capaian model yang telah dievaluasi.
+
+- **Persen Capaian:** 75%
+- **Waktu Kegiatan:** 45 Menit
 
 ## 29-08-2026
 
@@ -391,6 +407,14 @@ Unggah Laporan Kemajuan: Melakukan finalisasi formatting, melengkapi lampiran lo
 
 - **Persen Capaian:** 80%
 - **Waktu Kegiatan:** 150 Menit
+
+## 02-09-2026
+
+**Uraian Kegiatan:**
+Melaksanakan konsultasi final secara daring (online) bersama dosen pendamping untuk memvalidasi kelengkapan seluruh berkas Laporan Kemajuan, luaran sementara, dan logbook keuangan yang telah rampung dan siap divalidasi di SIMBELMAWA, sebagai persiapan matang menjelang tahap penilaian PKP2.
+
+- **Persen Capaian:** 81%
+- **Waktu Kegiatan:** 45 Menit
 
 ## 03-09-2026
 
