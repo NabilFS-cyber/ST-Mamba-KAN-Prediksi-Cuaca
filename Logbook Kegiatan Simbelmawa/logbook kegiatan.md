@@ -339,7 +339,7 @@ Penyusunan PPT (Slide Kemajuan) bagian awal: Meringkas latar belakang, urgensi, 
 ## 21-08-2026
 
 **Uraian Kegiatan:**
-Pembuatan Konten Instagram: Merancang desain infografis untuk materi "Hasil Program PKM". Konten menyoroti visualisasi kurva prediksi model, RMSE terendah, dan perolehan Akurasi Total 93.80%.
+Pembuatan Konten Instagram: Merancang desain infografis untuk materi "Hasil Program PKM". Konten menyoroti visualisasi kurva prediksi model, pencapaian Recall kelas Siaga sebesar 91.0%, rekor RMSE terendah 14.15 mm, serta perolehan Akurasi Total 93.80%.
 
 - **Persen Capaian:** 69%
 - **Waktu Kegiatan:** 120 Menit
