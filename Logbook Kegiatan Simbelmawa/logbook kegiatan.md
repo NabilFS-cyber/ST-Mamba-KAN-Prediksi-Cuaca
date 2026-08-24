@@ -227,7 +227,7 @@ Melaksanakan koordinasi dan konsultasi bersama dosen pendamping dan anggota tim 
 ## 03-08-2026
 
 **Uraian Kegiatan:**
-Berbekal konfigurasi dual-head multi-task learning yang sinkron, pelatihan komprehensif pada arsitektur GAT-Mamba-KAN akhirnya dituntaskan selama 300 iterasi (epochs). Penerapan algoritma penjadwalan Cosine Annealing Warm Restarts terbukti sangat efektif dalam memuluskan metrik validasi, mendorong nilai error terus menurun hingga mencapai titik konvergensi akhir dengan nilai Root Mean Square Error (RMSE) terendah yakni 17.07 mm. Pencapaian optimal ini akan ditindaklanjuti dengan pembangunan dashboard evaluasi guna mengukur dan memvisualisasikan kinerja model secara lebih rinci.
+Berbekal konfigurasi dual-head multi-task learning yang sinkron, pelatihan komprehensif pada arsitektur GAT-Mamba-KAN akhirnya dituntaskan selama 300 iterasi (epochs). Penerapan algoritma penjadwalan Cosine Annealing Warm Restarts terbukti sangat efektif dalam memuluskan metrik validasi, mendorong nilai error terus menurun hingga mencapai titik konvergensi akhir dengan nilai Root Mean Square Error (RMSE) terendah yakni 14.15 mm. Pencapaian optimal ini akan ditindaklanjuti dengan pembangunan dashboard evaluasi guna mengukur dan memvisualisasikan kinerja model secara lebih rinci.
 
 - **Persen Capaian:** 51%
 - **Waktu Kegiatan:** 120 Menit
@@ -243,7 +243,7 @@ Melaksanakan kunjungan lapangan ke BPBD DKI Jakarta sekaligus melakukan pengukur
 ## 05-08-2026
 
 **Uraian Kegiatan:**
-Melaksanakan konsultasi lanjutan bersama dosen pendamping dan anggota tim pasca penyelesaian 300 iterasi pelatihan model. Melaporkan pencapaian nilai RMSE terendah (17.07 mm) dan menerima masukan berharga mengenai rancangan konseptual Dashboard Evaluasi yang informatif dan representatif untuk pengujian selanjutnya.
+Melaksanakan konsultasi lanjutan bersama dosen pendamping dan anggota tim pasca penyelesaian 300 iterasi pelatihan model. Melaporkan pencapaian nilai RMSE terendah (14.15 mm) dan menerima masukan berharga mengenai rancangan konseptual Dashboard Evaluasi yang informatif dan representatif untuk pengujian selanjutnya.
 
 - **Persen Capaian:** 53%
 - **Waktu Kegiatan:** 60 Menit
@@ -251,7 +251,7 @@ Melaksanakan konsultasi lanjutan bersama dosen pendamping dan anggota tim pasca 
 ## 06-08-2026
 
 **Uraian Kegiatan:**
-Menyusul selesainya pelatihan model dengan performa puncak (RMSE 17.07 mm), fokus kegiatan beralih pada perancangan dan pembangunan Dashboard Evaluasi. Instrumen visual ini dibangun untuk mengukur kinerja model secara komprehensif dan serentak, mencakup pengamatan stabilitas konvergensi, komparasi metrik klasifikasi multi-aspek, uji ablasi, ketahanan prediksi terhadap waktu (lead-time), hingga analisis Explainable AI (XAI) demi menjaga transparansi bobot fitur cuaca. Melalui instrumen ini, pemantauan model menjadi jauh lebih terstruktur dan siap untuk diintegrasikan dengan logika pemicu sirine alarm.
+Menyusul selesainya pelatihan model dengan performa puncak (RMSE 14.15 mm), fokus kegiatan beralih pada perancangan dan pembangunan Dashboard Evaluasi. Instrumen visual ini dibangun untuk mengukur kinerja model secara komprehensif dan serentak, mencakup pengamatan stabilitas konvergensi, komparasi metrik klasifikasi multi-aspek, uji ablasi, ketahanan prediksi terhadap waktu (lead-time), hingga analisis Explainable AI (XAI) demi menjaga transparansi bobot fitur cuaca. Melalui instrumen ini, pemantauan model menjadi jauh lebih terstruktur dan siap untuk diintegrasikan dengan logika pemicu sirine alarm.
 
 - **Persen Capaian:** 54%
 - **Waktu Kegiatan:** 180 Menit
@@ -291,7 +291,7 @@ Melaksanakan diskusi dan konsultasi bersama dosen pendamping dan anggota tim unt
 ## 13-08-2026
 
 **Uraian Kegiatan:**
-Memasuki fase pengujian lanjutan pasca-simulasi sliding window dinamis, dilakukan eksperimen perbandingan nilai regresi secara Apple-to-Apple antara arsitektur usulan GAT-Mamba-KAN dengan literatur standar atau Fair Baselines (seperti Mamba-MLP, CNN-GRU, dan CNN-LSTM). Uji komparasi ini berhasil memvalidasi hipotesis awal riset, di mana arsitektur hibrida usulan terbukti mendominasi dengan pencapaian tingkat error paling rendah (RMSE 17.07 mm). Evaluasi berikutnya akan difokuskan pada perbandingan kapabilitas model dalam aspek metrik klasifikasi.
+Memasuki fase pengujian lanjutan pasca-simulasi sliding window dinamis, dilakukan eksperimen perbandingan nilai regresi secara Apple-to-Apple antara arsitektur usulan GAT-Mamba-KAN dengan literatur standar atau Fair Baselines (seperti Mamba-MLP, CNN-GRU, dan CNN-LSTM). Uji komparasi ini berhasil memvalidasi hipotesis awal riset, di mana arsitektur hibrida usulan terbukti mendominasi dengan pencapaian tingkat error paling rendah (RMSE 14.15 mm). Evaluasi berikutnya akan difokuskan pada perbandingan kapabilitas model dalam aspek metrik klasifikasi.
 
 - **Persen Capaian:** 61%
 - **Waktu Kegiatan:** 300 Menit
@@ -307,7 +307,7 @@ Melaksanakan konsultasi final fase evaluasi bersama dosen pendamping dan anggota
 ## 15-08-2026
 
 **Uraian Kegiatan:**
-Berdasarkan hasil uji regresi yang memposisikan GAT-Mamba-KAN sebagai model dengan tingkat error terendah, kegiatan pamungkas pada fase evaluasi ini adalah melakukan kompilasi performa deteksi tingkat siaga menggunakan parameter Akurasi Total (Total Accuracy) dan Critical Success Index (CSI). Hasil kompilasi menegaskan bahwa model usulan secara signifikan mengungguli seluruh model referensi dalam kapabilitasnya mendeteksi curah hujan ekstrem, yang dibuktikan dengan perolehan Akurasi Total sebesar 88.02% dan nilai CSI yang solid di atas 80%.
+Berdasarkan hasil uji regresi yang memposisikan GAT-Mamba-KAN sebagai model dengan tingkat error terendah, kegiatan pamungkas pada fase evaluasi ini adalah melakukan kompilasi performa deteksi tingkat siaga menggunakan parameter Akurasi Total (Total Accuracy) dan Critical Success Index (CSI). Hasil kompilasi menegaskan bahwa model usulan secara signifikan mengungguli seluruh model referensi dalam kapabilitasnya mendeteksi curah hujan ekstrem, yang dibuktikan dengan perolehan Akurasi Total sebesar 93.80% dan nilai CSI yang solid di atas 80%.
 
 - **Persen Capaian:** 63%
 - **Waktu Kegiatan:** 150 Menit
@@ -339,7 +339,7 @@ Penyusunan PPT (Slide Kemajuan) bagian awal: Meringkas latar belakang, urgensi, 
 ## 21-08-2026
 
 **Uraian Kegiatan:**
-Pembuatan Konten Instagram: Merancang desain infografis untuk materi "Hasil Program PKM". Konten menyoroti visualisasi kurva prediksi model, RMSE terendah, dan perolehan Akurasi Total 88.02%.
+Pembuatan Konten Instagram: Merancang desain infografis untuk materi "Hasil Program PKM". Konten menyoroti visualisasi kurva prediksi model, RMSE terendah, dan perolehan Akurasi Total 93.80%.
 
 - **Persen Capaian:** 69%
 - **Waktu Kegiatan:** 120 Menit
@@ -371,7 +371,7 @@ Melaksanakan bimbingan dan konsultasi secara luring (offline) bersama dosen pend
 ## 26-08-2026
 
 **Uraian Kegiatan:**
-Lanjutan Laporan Kemajuan: Penulisan Bab 4 (Hasil yang Dicapai). Merangkum temuan evaluasi konvergensi RMSE 17.07 mm serta metrik awal akurasi klasifikasi Siaga.
+Lanjutan Laporan Kemajuan: Penulisan Bab 4 (Hasil yang Dicapai). Merangkum temuan evaluasi konvergensi RMSE 14.15 mm serta metrik awal akurasi klasifikasi Siaga.
 
 - **Persen Capaian:** 74%
 - **Waktu Kegiatan:** 150 Menit
