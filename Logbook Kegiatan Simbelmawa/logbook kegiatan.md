@@ -131,7 +131,7 @@ Melaksanakan kegiatan analisis distribusi curah hujan untuk menentukan threshold
 ## 15-07-2026
 
 **Uraian Kegiatan:**
-Melaksanakan kegiatan penanganan ketimpangan data ekstrem menggunakan teknik Random Over-Sampling (ROS) oleh anggota tim secara daring di kediaman masing-masing. Hasil yang diperoleh adalah deret data historis yang seimbang tanpa merusak karakteristik matematis cuaca. Selanjutnya akan dilakukan perakitan dataset menjadi struktur Tensor 4D berbasis sliding window.
+Melaksanakan kegiatan penanganan ketimpangan data ekstrem menggunakan teknik Flattened SMOTE-Tomek oleh anggota tim secara daring di kediaman masing-masing. Hasil yang diperoleh adalah deret data historis yang seimbang tanpa merusak karakteristik matematis cuaca. Selanjutnya akan dilakukan perakitan dataset menjadi struktur Tensor 4D berbasis sliding window.
 
 - **Persen Capaian:** 37%
 - **Waktu Kegiatan:** 90 Menit
