@@ -395,7 +395,7 @@ Melaksanakan kegiatan publikasi konten infografis Hasil Program PKM oleh anggota
 ## 30-08-2026
 
 **Uraian Kegiatan:**
-Melaksanakan kegiatan pengujian fungsi alarm dan deployment Dashboard ke server cloud oleh anggota tim pengembang secara daring di kediaman masing-masing. Hasil yang diperoleh adalah beroperasinya Dashboard Sistem Rain Alert secara penuh secara online. Selanjutnya akan dilakukan finalisasi unggah Laporan Kemajuan ke SIMBELMAWA.
+Melaksanakan kegiatan pengujian fungsi alarm dan deployment Dashboard ke server cloud oleh anggota tim pengembang secara daring di kediaman masing-masing. Hasil yang diperoleh adalah beroperasinya Dashboard Sistem Rain Alert secara penuh secara online. Selanjutnya akan dilakukan penyusunan materi presentasi (PPT) untuk penilaian PKP2.
 
 - **Persen Capaian:** 78%
 - **Waktu Kegiatan:** 180 Menit
@@ -403,31 +403,15 @@ Melaksanakan kegiatan pengujian fungsi alarm dan deployment Dashboard ke server 
 ## 01-09-2026
 
 **Uraian Kegiatan:**
-Melaksanakan kegiatan finalisasi unggah Laporan Kemajuan dan kelengkapan luaran bersama anggota tim secara daring melalui sistem SIMBELMAWA. Hasil yang diperoleh adalah terkirimnya seluruh berkas laporan, lampiran logbook, dan bukti luaran sementara ke sistem pusat. Selanjutnya akan dilakukan validasi keseluruhan kelengkapan bersama dosen pendamping.
-
-- **Persen Capaian:** 80%
-- **Waktu Kegiatan:** 150 Menit
-
-## 02-09-2026
-
-**Uraian Kegiatan:**
-Melaksanakan kegiatan validasi kelengkapan berkas yang telah terunggah bersama dosen pendamping secara daring melalui telekonferensi. Hasil yang diperoleh adalah terkonfirmasinya seluruh luaran dan lampiran logbook sebagai persiapan matang penilaian PKP2. Selanjutnya akan dilakukan proses klik persetujuan dosen di dalam sistem SIMBELMAWA.
+Melaksanakan kegiatan penyusunan materi presentasi (PPT) PKP2 oleh anggota tim secara daring di kediaman masing-masing. Hasil yang diperoleh adalah draf awal slide presentasi (menggunakan platform Canva) yang memuat visualisasi evaluasi performa dan tabel uji ablasi model. Selanjutnya akan dilakukan latihan presentasi dan reviu PPT bersama dosen pendamping.
 
 - **Persen Capaian:** 81%
-- **Waktu Kegiatan:** 45 Menit
+- **Waktu Kegiatan:** 150 Menit
 
 ## 03-09-2026
 
 **Uraian Kegiatan:**
-Melaksanakan kegiatan koordinasi eksekusi persetujuan sistem bersama dosen pendamping secara daring agar proses Validasi Laporan Kemajuan terkunci secara resmi. Hasil yang diperoleh adalah status dokumen di SIMBELMAWA berubah menjadi divalidasi oleh dosen. Selanjutnya akan dilakukan finalisasi PPT PKP2 dan kegiatan simulasi latihan presentasi.
-
-- **Persen Capaian:** 82%
-- **Waktu Kegiatan:** 45 Menit
-
-## 05-09-2026
-
-**Uraian Kegiatan:**
-Melaksanakan kegiatan finalisasi PPT PKP2 dan latihan presentasi bersama dosen pendamping secara luring di kampus Universitas Jenderal Achmad Yani. Hasil yang diperoleh adalah kesiapan tim dalam memaparkan argumen arsitektur serta penguasaan manajemen waktu presentasi. Selanjutnya akan dilakukan inisiasi penyusunan draf Artikel Ilmiah.
+Melaksanakan kegiatan latihan presentasi dan reviu materi (PPT) PKP2 bersama dosen pendamping (Ibu Esmeralda Djamal) secara daring melalui platform telekonferensi. Hasil yang diperoleh adalah masukan perbaikan slide presentasi dan evaluasi penguasaan materi serta ketepatan waktu *pitching* tiap anggota tim. Selanjutnya akan dilakukan inisiasi penyusunan draf Artikel Ilmiah.
 
 - **Persen Capaian:** 84%
 - **Waktu Kegiatan:** 120 Menit
