@@ -408,7 +408,7 @@ Melaksanakan kegiatan penyusunan materi presentasi (PPT) PKP2 oleh anggota tim s
 - **Persen Capaian:** 81%
 - **Waktu Kegiatan:** 150 Menit
 
-## 03-09-2026
+## 02-09-2026
 
 **Uraian Kegiatan:**
 Melaksanakan kegiatan latihan presentasi dan reviu materi (PPT) PKP2 bersama dosen pendamping (Ibu Esmeralda Djamal) secara daring melalui platform telekonferensi. Hasil yang diperoleh adalah masukan perbaikan slide presentasi dan evaluasi penguasaan materi serta ketepatan waktu *pitching* tiap anggota tim. Selanjutnya akan dilakukan inisiasi penyusunan draf Artikel Ilmiah.
@@ -416,7 +416,7 @@ Melaksanakan kegiatan latihan presentasi dan reviu materi (PPT) PKP2 bersama dos
 - **Persen Capaian:** 84%
 - **Waktu Kegiatan:** 120 Menit
 
-## 07-09-2026
+## 03-09-2026
 
 **Uraian Kegiatan:**
 Melaksanakan kegiatan penyusunan draf awal Artikel Ilmiah oleh anggota tim secara daring di kediaman masing-masing menyesuaikan dengan format jurnal sasaran. Hasil yang diperoleh adalah selesainya bagian Abstrak, Pendahuluan, dan Tinjauan Pustaka. Selanjutnya akan dilakukan penulisan detail Metodologi dan ekstraksi grafik untuk artikel.
