@@ -428,17 +428,25 @@
 
 - **Nama Kegiatan:** Bimbingan evaluasi laporan kemajuan dan ppt
 - **Pelaksana:** Seluruh Anggota Tim (Nabil, Maisya, Elsya, Tatya) beserta Dosen Pendamping
-- **Uraian Kegiatan:** Melaksanakan kegiatan bimbingan bersama Dosen Pendamping secara luring di kampus Universitas Jenderal Achmad Yani. Pembahasan berfokus pada evaluasi kelengkapan lanjutan Laporan Kemajuan (penyempurnaan Bab 4) serta pengecekan akhir materi presentasi (PPT) secara tatap muka. Hasil yang diperoleh adalah persetujuan dosen terhadap substansi laporan dan kesiapan slide presentasi tim. Selanjutnya akan dilakukan penulisan detail Metodologi dan ekstraksi grafik untuk artikel ilmiah.
+- **Uraian Kegiatan:** Melaksanakan kegiatan bimbingan bersama Dosen Pendamping secara luring di kampus Universitas Jenderal Achmad Yani. Pembahasan berfokus pada evaluasi kelengkapan lanjutan Laporan Kemajuan (penyempurnaan Bab 4) serta pengecekan akhir materi presentasi (PPT) secara tatap muka. Hasil yang diperoleh adalah persetujuan dosen terhadap substansi laporan dan kesiapan slide presentasi tim. Selanjutnya akan dilakukan ekstraksi visual grafik dan penulisan Metodologi Artikel Ilmiah.
 - **Persen Capaian:** 86%
 - **Waktu Kegiatan:** 90 Menit
 
-## 09-09-2026
+## 06-09-2026
 
 - **Nama Kegiatan:** Ekstraksi visual grafik beresolusi tinggi dan penulisan metodologi artikel ilmiah
 - **Pelaksana:** Tatya Nova Wulandari dan Nabil Fauzi Seff (Ketua)
-- **Uraian Kegiatan:** Melaksanakan kegiatan ekstraksi visual grafik beresolusi tinggi dan penulisan Metodologi Artikel Ilmiah oleh Tatya Nova Wulandari dan Nabil Fauzi Seff (Ketua) secara daring di kediaman masing-masing. Hasil yang diperoleh adalah terurainya penjelasan komparasi Apple-to-Apple dengan baik ke dalam teks ilmiah. Selanjutnya akan dilakukan perumusan draf awal Laporan Akhir Program PKM.
+- **Uraian Kegiatan:** Melaksanakan kegiatan ekstraksi visual grafik beresolusi tinggi dan penulisan Metodologi Artikel Ilmiah oleh Tatya Nova Wulandari dan Nabil Fauzi Seff (Ketua) secara daring di kediaman masing-masing. Hasil yang diperoleh adalah terurainya penjelasan komparasi Apple-to-Apple dengan baik ke dalam teks ilmiah. Selanjutnya akan dilakukan finalisasi dan unggah Laporan Kemajuan ke sistem SIMBELMAWA.
 - **Persen Capaian:** 87%
 - **Waktu Kegiatan:** 200 Menit
+
+## 10-09-2026
+
+- **Nama Kegiatan:** Finalisasi dan unggah laporan kemajuan
+- **Pelaksana:** Seluruh Anggota Tim (Nabil, Maisya, Elsya, Tatya)
+- **Uraian Kegiatan:** Melaksanakan kegiatan finalisasi dan unggah Laporan Kemajuan Program PKM-RE beserta kelengkapan luarannya oleh Seluruh Anggota Tim (Nabil, Maisya, Elsya, Tatya) secara daring ke portal SIMBELMAWA. Hasil yang diperoleh adalah laporan kemajuan berhasil tersubmit dan statusnya telah divalidasi oleh Dosen Pendamping. Selanjutnya akan dilakukan perumusan draf awal Laporan Akhir Program PKM.
+- **Persen Capaian:** 88%
+- **Waktu Kegiatan:** 120 Menit
 
 ## 11-09-2026
 
