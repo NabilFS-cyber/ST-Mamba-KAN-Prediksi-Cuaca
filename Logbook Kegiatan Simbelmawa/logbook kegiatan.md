@@ -420,9 +420,17 @@
 
 - **Nama Kegiatan:** Penyusunan draf awal artikel ilmiah
 - **Pelaksana:** Tatya Nova Wulandari dan Nabil Fauzi Seff (Ketua)
-- **Uraian Kegiatan:** Melaksanakan kegiatan penyusunan draf awal Artikel Ilmiah oleh Tatya Nova Wulandari dan Nabil Fauzi Seff (Ketua) secara daring di kediaman masing-masing menyesuaikan dengan format jurnal sasaran. Hasil yang diperoleh adalah selesainya bagian Abstrak, Pendahuluan, dan Tinjauan Pustaka. Selanjutnya akan dilakukan penulisan detail Metodologi dan ekstraksi grafik untuk artikel.
+- **Uraian Kegiatan:** Melaksanakan kegiatan penyusunan draf awal Artikel Ilmiah oleh Tatya Nova Wulandari dan Nabil Fauzi Seff (Ketua) secara daring di kediaman masing-masing menyesuaikan dengan format jurnal sasaran. Hasil yang diperoleh adalah selesainya bagian Abstrak, Pendahuluan, dan Tinjauan Pustaka. Selanjutnya akan dilakukan bimbingan lanjutan evaluasi Laporan Kemajuan dan pengecekan presentasi secara luring.
 - **Persen Capaian:** 85%
 - **Waktu Kegiatan:** 180 Menit
+
+## 04-09-2026
+
+- **Nama Kegiatan:** Bimbingan evaluasi laporan kemajuan dan ppt
+- **Pelaksana:** Seluruh Anggota Tim (Nabil, Maisya, Elsya, Tatya) beserta Dosen Pendamping
+- **Uraian Kegiatan:** Melaksanakan kegiatan bimbingan bersama Dosen Pendamping secara luring di kampus Universitas Jenderal Achmad Yani. Pembahasan berfokus pada evaluasi kelengkapan lanjutan Laporan Kemajuan (penyempurnaan Bab 4) serta pengecekan akhir materi presentasi (PPT) secara tatap muka. Hasil yang diperoleh adalah persetujuan dosen terhadap substansi laporan dan kesiapan slide presentasi tim. Selanjutnya akan dilakukan penulisan detail Metodologi dan ekstraksi grafik untuk artikel ilmiah.
+- **Persen Capaian:** 86%
+- **Waktu Kegiatan:** 90 Menit
 
 ## 09-09-2026
 
