@@ -5,10 +5,10 @@ Berikut adalah draf detail pengeluaran yang diformat *sama persis* dengan kolom 
 ## 1. ATK dan Perlengkapan Penelitian
 - **Tanggal Belanja:** 02-06-2026
 - **Item Belanja:** Pembelian ATK diantaranya Meteran Ukur, HVS A4, Buku Logbook, Map Dokumen, Spidol Permanen, dan Binder Clip
-- **Harga Satuan:** 539390
+- **Harga Satuan:** 540000
 - **Satuan:** Paket
 - **Jumlah:** 1
-- **Total:** Rp 539.390
+- **Total:** Rp 540.000
 
 ## 2. Kuota Internet Bulan 1
 - **Tanggal Belanja:** 05-06-2026
@@ -37,10 +37,10 @@ Berikut adalah draf detail pengeluaran yang diformat *sama persis* dengan kolom 
 ## 5. Pembelian Dataset Historis
 - **Tanggal Belanja:** 08-06-2026
 - **Item Belanja:** Pembelian dataset historis satelit untuk kebutuhan ekstraksi jutaan baris data latih (training data) model AI ST-Mamba-KAN
-- **Harga Satuan:** 997810
+- **Harga Satuan:** 997199
 - **Satuan:** Paket
 - **Jumlah:** 1
-- **Total:** Rp 997.810
+- **Total:** Rp 997.199
 
 ## 6. Iklan Instagram Bulan 2
 - **Tanggal Belanja:** 04-07-2026
@@ -109,10 +109,10 @@ Berikut adalah draf detail pengeluaran yang diformat *sama persis* dengan kolom 
 ## 14. Google Colab Bulan 3
 - **Tanggal Belanja:** 06-08-2026
 - **Item Belanja:** Pembayaran Langganan Google Colab (Pro) untuk Kebutuhan Komputasi Penelitian PKM-RE pada Bulan Ketiga
-- **Harga Satuan:** 198720
+- **Harga Satuan:** 198721
 - **Satuan:** Bulan
 - **Jumlah:** 1
-- **Total:** Rp 198.720
+- **Total:** Rp 198.721
 
 ## 15. Iklan Instagram Bulan 3
 - **Tanggal Belanja:** 29-08-2026
