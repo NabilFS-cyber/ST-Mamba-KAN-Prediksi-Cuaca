@@ -2,6 +2,14 @@
 
 Berikut adalah draf detail pengeluaran yang diformat *sama persis* dengan kolom di situs SIMBELMAWA, sehingga Anda tinggal _copy-paste_. Semua item yang sebelumnya dipecah menjadi 'per hari' sudah saya perbaiki menjadi 'per Bulan' atau 'per Paket' dengan jumlah (kuantitas) 1 agar pengisian harganya bulat dan rapi tanpa desimal yang aneh.
 
+## 0. ATK dan Perlengkapan Penelitian (Sesuai Nota Rp 540.000)
+- **Tanggal Belanja:** 02-06-2026
+- **Item Belanja:** Pembelian ATK diantaranya Meteran Ukur, HVS A4, Buku Logbook, Map Dokumen, Spidol Permanen, dan Binder Clip
+- **Harga Satuan:** 540000
+- **Satuan:** Paket
+- **Jumlah:** 1
+- **Total:** Rp 540.000
+
 ## 1. Kuota Internet Bulan 1
 - **Tanggal Belanja:** 05-06-2026
 - **Item Belanja:** Kebutuhan Kuota Internet Tim pada Bulan Pertama
@@ -57,14 +65,6 @@ Berikut adalah draf detail pengeluaran yang diformat *sama persis* dengan kolom 
 - **Satuan:** Bulan
 - **Jumlah:** 1
 - **Total:** Rp 208.307
-
-## 8. ATK dan Perlengkapan Survei (Sesuai Nota Rp 540.000)
-- **Tanggal Belanja:** 31-07-2026
-- **Item Belanja:** Pembelian perlengkapan ATK (Kertas HVS, Map, Spidol, Binder Clip, Buku Logbook) dan alat ukur (Meteran Gulung) untuk pencatatan lapangan serta persiapan observasi drainase BPBD
-- **Harga Satuan:** 540000
-- **Satuan:** Paket
-- **Jumlah:** 1
-- **Total:** Rp 540.000
 
 ## 9. Transportasi Observasi BMKG
 - **Tanggal Belanja:** 29-07-2026
