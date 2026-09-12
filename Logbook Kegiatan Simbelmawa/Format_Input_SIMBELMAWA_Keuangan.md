@@ -21,10 +21,10 @@ Berikut adalah draf detail pengeluaran yang diformat *sama persis* dengan kolom 
 ## 3. Iklan Instagram Bulan 1
 - **Tanggal Belanja:** 06-06-2026
 - **Item Belanja:** Pembayaran Iklan untuk Konten Materi pada platform Instagram
-- **Harga Satuan:** 160000
+- **Harga Satuan:** 160001
 - **Satuan:** Paket
 - **Jumlah:** 1
-- **Total:** Rp 160.000
+- **Total:** Rp 160.001
 
 ## 4. Google Colab Bulan 1
 - **Tanggal Belanja:** 06-06-2026
@@ -45,10 +45,10 @@ Berikut adalah draf detail pengeluaran yang diformat *sama persis* dengan kolom 
 ## 6. Iklan Instagram Bulan 2
 - **Tanggal Belanja:** 04-07-2026
 - **Item Belanja:** Pembayaran Iklan untuk Konten Materi Kedua pada platform Instagram
-- **Harga Satuan:** 170000
+- **Harga Satuan:** 169997
 - **Satuan:** Paket
 - **Jumlah:** 1
-- **Total:** Rp 170.000
+- **Total:** Rp 169.997
 
 ## 7. Kuota Internet Bulan 2
 - **Tanggal Belanja:** 05-07-2026
@@ -117,10 +117,10 @@ Berikut adalah draf detail pengeluaran yang diformat *sama persis* dengan kolom 
 ## 15. Iklan Instagram Bulan 3
 - **Tanggal Belanja:** 29-08-2026
 - **Item Belanja:** Pembayaran Iklan untuk Konten Materi Ketiga pada platform Instagram
-- **Harga Satuan:** 170000
+- **Harga Satuan:** 170002
 - **Satuan:** Paket
 - **Jumlah:** 1
-- **Total:** Rp 170.000
+- **Total:** Rp 170.002
 
 ## 16. Google Colab Bulan 4
 - **Tanggal Belanja:** 06-09-2026
